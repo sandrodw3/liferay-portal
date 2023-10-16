@@ -36,6 +36,9 @@ export default function RulesModal({editingRule, onCloseModal}) {
 
 	const [nameError, setNameError] = useState(false);
 
+	const [actions, setActions] = useState(editingRule?.actions || []);
+	const [conditions, setConditions] = useState(editingRule?.conditions || []);
+
 	const onSave = () => {
 		if (!name) {
 			setNameError(true);
@@ -134,10 +137,15 @@ export default function RulesModal({editingRule, onCloseModal}) {
 				</p>
 
 				<RuleBuilderConditionSection
+					conditions={conditions}
 					fetcher={() => RulesService.getUsers()}
+					setConditions={setConditions}
 				/>
 
-				<RuleBuilderActionSection />
+				<RuleBuilderActionSection
+					actions={actions}
+					setActions={setActions}
+				/>
 			</ClayModal.Body>
 
 			<ClayModal.Footer
