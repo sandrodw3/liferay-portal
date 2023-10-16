@@ -12,6 +12,6 @@ export default {
 	 * Get users
 	 */
 	getUsers() {
-		return serviceFetch(config.getUsers, {}, () => {});
+		return serviceFetch(config.getUsersURL, {}, () => {});
 	},
 };
