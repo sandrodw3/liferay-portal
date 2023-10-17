@@ -101,7 +101,12 @@ export default function Condition({
 			) : null}
 
 			{ValueSelectorComponent ? (
-				<ValueSelectorComponent fetcher={fetcher} />
+				<ValueSelectorComponent
+					fetcher={fetcher}
+					onValueChanged={(value: string) =>
+						onConditionChange({...condition, value})
+					}
+				/>
 			) : null}
 		</RuleBuilderItem>
 	);
