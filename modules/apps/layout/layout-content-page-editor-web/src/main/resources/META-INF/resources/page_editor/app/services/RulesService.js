@@ -9,9 +9,75 @@ import serviceFetch from './serviceFetch';
 export default {
 
 	/**
+	 * Add a rule
+	 */
+	addRule({
+		actions,
+		conditions,
+		name,
+		onNetworkStatus,
+		segmentsExperienceId,
+	}) {
+		return serviceFetch(
+			config.addRuleURL,
+			{
+				body: {
+					actions: JSON.stringify(actions),
+					conditions: JSON.stringify(conditions),
+					name,
+					segmentsExperienceId,
+				},
+			},
+			onNetworkStatus
+		);
+	},
+
+	/**
+	 * Delete a rule
+	 */
+	deleteRule({onNetworkStatus, ruleId, segmentsExperienceId}) {
+		return serviceFetch(
+			config.deleteRuleURL,
+			{
+				body: {
+					ruleId,
+					segmentsExperienceId,
+				},
+			},
+			onNetworkStatus
+		);
+	},
+
+	/**
 	 * Get users
 	 */
 	getUsers() {
 		return serviceFetch(config.getUsersURL, {}, () => {});
+	},
+
+	/**
+	 * Update a rule with new name, actions and conditions
+	 */
+	updateRule({
+		actions,
+		conditions,
+		name,
+		onNetworkStatus,
+		ruleId,
+		segmentsExperienceId,
+	}) {
+		return serviceFetch(
+			config.updateRuleURL,
+			{
+				body: {
+					actions: JSON.stringify(actions),
+					conditions: JSON.stringify(conditions),
+					name,
+					ruleId,
+					segmentsExperienceId,
+				},
+			},
+			onNetworkStatus
+		);
 	},
 };
