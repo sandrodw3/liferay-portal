@@ -6,9 +6,27 @@
 /// <reference types="react" />
 
 import {Fetcher} from '../../../app/utils/useCache';
-export declare function RuleBuilderActionSection(): JSX.Element;
-export declare function RuleBuilderConditionSection({
-	fetcher,
-}: {
+import {Action as ActionType} from './Action';
+import {Condition as ConditionType} from './Condition';
+declare type RuleBuilderActionProps = {
+	actions: ActionType[];
 	fetcher: Fetcher;
-}): JSX.Element;
+	setActions: (initializer: (previous: ActionType[]) => ActionType[]) => {};
+};
+export declare function RuleBuilderActionSection({
+	actions,
+	setActions,
+}: RuleBuilderActionProps): JSX.Element;
+declare type RuleBuilderConditionProps = {
+	conditions: ConditionType[];
+	fetcher: Fetcher;
+	setConditions: (
+		initializer: (previous: ConditionType[]) => ConditionType[]
+	) => {};
+};
+export declare function RuleBuilderConditionSection({
+	conditions,
+	fetcher,
+	setConditions,
+}: RuleBuilderConditionProps): JSX.Element;
+export {};
