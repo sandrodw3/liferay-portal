@@ -64,7 +64,7 @@ export function Item({index, item, numberOfItems, onDropItem}: ItemProps) {
 	};
 
 	return (
-		<div className="c-pb-3" ref={targetRef} role="listitem">
+		<div className="c-pb-3" ref={targetRef} role="listsitem">
 			<div ref={mouseDragHandlerRef}>
 				<ClayCard
 					className={classNames('c-mb-0', {
