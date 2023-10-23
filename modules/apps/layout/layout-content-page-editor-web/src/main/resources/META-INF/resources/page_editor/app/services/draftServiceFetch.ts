@@ -3,22 +3,20 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {updateNetwork} from '../actions/index';
+import updateNetwork from '../actions/updateNetwork';
 import {SERVICE_NETWORK_STATUS_TYPES} from '../config/constants/serviceNetworkStatusTypes';
-import serviceFetch from './serviceFetch';
+import serviceFetch, {Options} from './serviceFetch';
 
 /**
  * Performs a POST request to the given url and parses an expected object response.
  * If the response status is over 400, or there is any "error" or "exception"
  * properties on the response object, it rejects the promise with an Error object.
- * @param {string} url
- * @param {object} [body={}]
- * @param {function} onNetworkStatus
- * @private
- * @return {Promise<object>}
- * @review
  */
-export default function draftServiceFetch(url, options, onNetworkStatus) {
+export default function draftServiceFetch(
+	url: string,
+	options: Options,
+	onNetworkStatus: (action: ReturnType<typeof updateNetwork>) => void
+) {
 	onNetworkStatus(
 		updateNetwork({
 			status: SERVICE_NETWORK_STATUS_TYPES.savingDraft,
@@ -44,7 +42,10 @@ export default function draftServiceFetch(url, options, onNetworkStatus) {
  * @param {string} error
  * @param {function} onNetworkStatus
  */
-function handleErroredResponse(error, onNetworkStatus) {
+function handleErroredResponse(
+	error: string,
+	onNetworkStatus: (action: ReturnType<typeof updateNetwork>) => void
+) {
 	onNetworkStatus(
 		updateNetwork({
 			error,
