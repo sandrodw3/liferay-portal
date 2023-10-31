@@ -13,6 +13,7 @@ import React, {useState} from 'react';
 
 import {v4 as uuidv4} from 'uuid';
 
+import {FragmentEntryLink} from '../../../app/actions/addFragmentEntryLinks';
 import Action, {Action as ActionType} from './Action';
 import Condition, {Condition as ConditionType} from './Condition';
 
@@ -33,11 +34,14 @@ const TriggerLabel = React.forwardRef<HTMLButtonElement, any>(
 
 type RuleBuilderActionProps = {
 	actions: ActionType[];
+	fragmentEntryLinks: FragmentEntryLink[];
+	layoutDataItems: {label: string; value: string}[];
 	setActions: (initializer: (previous: ActionType[]) => ActionType[]) => {};
 };
 
 export function RuleBuilderActionSection({
 	actions,
+	layoutDataItems,
 	setActions,
 }: RuleBuilderActionProps) {
 	return (
@@ -69,6 +73,7 @@ export function RuleBuilderActionSection({
 					<Action
 						action={action}
 						key={action.id}
+						layoutDataItems={layoutDataItems}
 						onActionChange={(action) =>
 							setActions((previousActions) => {
 								const newActions = [...previousActions];
