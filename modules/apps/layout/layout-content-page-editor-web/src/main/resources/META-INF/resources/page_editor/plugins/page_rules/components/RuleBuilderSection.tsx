@@ -7,7 +7,7 @@ import ClayButton from '@clayui/button';
 import {Option, Picker} from '@clayui/core';
 import ClayIcon from '@clayui/icon';
 import ClayPanel from '@clayui/panel';
-import React, {Dispatch, SetStateAction, useMemo} from 'react';
+import React, {Dispatch, SetStateAction, useContext, useMemo} from 'react';
 
 // @ts-ignore
 
@@ -16,6 +16,7 @@ import {v4 as uuidv4} from 'uuid';
 import {FragmentEntryLink} from '../../../app/actions/addFragmentEntryLinks';
 import ActionComponent, {Action} from './Action';
 import ConditionComponent, {Condition} from './Condition';
+import {ScreenReaderAnnouncerContext} from './ScreenReaderContext';
 
 const TriggerLabel = React.forwardRef<HTMLButtonElement, any>(
 	({children, className: _className, onClick, ...otherProps}, ref) => (
@@ -44,6 +45,8 @@ export function RuleBuilderActionSection({
 	layoutDataItems,
 	setActions,
 }: RuleBuilderActionProps) {
+	const {sendMessage} = useContext(ScreenReaderAnnouncerContext);
+
 	const actionsRefMap = useMemo(() => new Map(), []);
 
 	const onDeleteAction = (action: Action, index: number) => {
@@ -61,6 +64,8 @@ export function RuleBuilderActionSection({
 				)
 			);
 		}
+
+		sendMessage(Liferay.Language.get('action-deleted'));
 	};
 
 	const setActionRef = (
@@ -120,12 +125,13 @@ export function RuleBuilderActionSection({
 				<ClayButton
 					className="mt-4"
 					displayType="secondary"
-					onClick={() =>
+					onClick={() => {
 						setActions((previousActions) => [
 							...previousActions,
 							{id: uuidv4()} as Action,
-						])
-					}
+						]);
+						sendMessage(Liferay.Language.get('action-added'));
+					}}
 					size="sm"
 				>
 					{Liferay.Language.get('add-action')}
@@ -150,6 +156,8 @@ export function RuleBuilderConditionSection({
 	setConditionType,
 	setConditions,
 }: RuleBuilderConditionProps) {
+	const {sendMessage} = useContext(ScreenReaderAnnouncerContext);
+
 	const conditionRefMap = useMemo(() => new Map(), []);
 
 	const onDeleteCondition = (condition: Condition, index: number) => {
@@ -168,6 +176,8 @@ export function RuleBuilderConditionSection({
 				);
 			});
 		}
+
+		sendMessage(Liferay.Language.get('condition-deleted'));
 	};
 
 	const setConditionRef = (
@@ -181,7 +191,18 @@ export function RuleBuilderConditionSection({
 		<ClayPanel
 			className="page-editor__rule-builder-section"
 			displayTitle={
-				<ClayPanel.Title className="p-3 page-editor__rule-builder-section-title text-3">
+				<ClayPanel.Title
+					aria-label={
+						conditionType === 'all'
+							? Liferay.Language.get(
+									'if-all-of-the-following-conditions-are-met'
+							  )
+							: Liferay.Language.get(
+									'if-any-of-the-following-conditions-are-met'
+							  )
+					}
+					className="p-3 page-editor__rule-builder-section-title text-3"
+				>
 					<div className="align-items-center d-flex">
 						<ClayIcon
 							className="arrow-icon mr-3"
@@ -258,12 +279,14 @@ export function RuleBuilderConditionSection({
 				<ClayButton
 					className="mt-4"
 					displayType="secondary"
-					onClick={() =>
+					onClick={() => {
 						setConditions((previousConditions) => [
 							...previousConditions,
 							{id: uuidv4()} as Condition,
-						])
-					}
+						]);
+
+						sendMessage(Liferay.Language.get('condition-added'));
+					}}
 					size="sm"
 				>
 					{Liferay.Language.get('add-condition')}
