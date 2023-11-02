@@ -138,11 +138,16 @@ export function RuleBuilderConditionSection({
 			setConditions([{id: condition.id} as Condition]);
 		}
 		else {
-			setConditions((previousConditions) =>
-				previousConditions.filter(
+			const nextCondition =
+				conditions[index - 1] || conditions[index + 1];
+
+			conditionRefMap.get(nextCondition.id)?.focus();
+
+			setConditions((previousConditions) => {
+				return previousConditions.filter(
 					(_condition, currentIndex) => currentIndex !== index
-				)
-			);
+				);
+			});
 		}
 	};
 
