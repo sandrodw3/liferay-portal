@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import React, {FC} from 'react';
+import {sub} from 'frontend-js-web';
+import React, {ComponentProps, FC, useContext} from 'react';
 
 import {config} from '../../../app/config/index';
 import RulesService from '../../../app/services/RulesService';
@@ -11,6 +12,7 @@ import {CACHE_KEYS} from '../../../app/utils/cache';
 import useCache from '../../../app/utils/useCache';
 import RuleBuilderItem from './RuleBuilderItem';
 import RuleSelect from './RuleSelect';
+import {ScreenReaderAnnouncerContext} from './ScreenReaderContext';
 
 export interface Condition {
 	condition?: 'user' | 'role' | 'segment';
@@ -23,6 +25,8 @@ interface ConditionProps {
 	condition: Condition;
 	onConditionChange: (condition: Condition) => void;
 	onDeleteCondition: () => void;
+	showDeleteButton: boolean;
+	wrapperRef?: ComponentProps<typeof RuleBuilderItem>['wrapperRef'];
 }
 
 const TYPE_VALUES = {
@@ -65,7 +69,7 @@ const VALUE_SELECTOR_COMPONENTS: Record<
 	FC<SelectorProps> | null
 > = {
 	[CONDITION_VALUES.user]: UserSelector,
-	[CONDITION_VALUES.role]: null,
+	[CONDITION_VALUES.role]: RolesSelector,
 	[CONDITION_VALUES.segment]: SegmentsSelector,
 };
 
@@ -73,7 +77,11 @@ export default function Condition({
 	condition,
 	onConditionChange,
 	onDeleteCondition,
+	showDeleteButton,
+	wrapperRef,
 }: ConditionProps) {
+	const {sendMessage} = useContext(ScreenReaderAnnouncerContext);
+
 	const ValueSelectorComponent: FC<SelectorProps> | null = condition.condition
 		? VALUE_SELECTOR_COMPONENTS[condition.condition]
 		: null;
@@ -81,18 +89,27 @@ export default function Condition({
 	return (
 		<RuleBuilderItem
 			onDeleteButtonClick={onDeleteCondition}
+			showDeleteButton={showDeleteButton}
 			type="condition"
+			wrapperRef={wrapperRef}
 		>
 			<RuleSelect
+				aria-label={Liferay.Language.get(
+					'select-item-for-the-condition'
+				)}
 				items={TYPE_ITEMS}
 				onSelectionChange={(type) =>
 					onConditionChange({...condition, type})
 				}
-				selectedKey={condition.type}
+				selectedKey={condition.type ?? ''}
 			/>
 
 			{condition.type && CONDITION_ITEMS[condition.type] ? (
 				<RuleSelect
+					aria-label={sub(
+						Liferay.Language.get('select-x'),
+						Liferay.Language.get('condition')
+					)}
 					items={CONDITION_ITEMS[condition.type]}
 					onSelectionChange={(selectedCondition) =>
 						onConditionChange({
@@ -107,12 +124,16 @@ export default function Condition({
 
 			{ValueSelectorComponent ? (
 				<ValueSelectorComponent
-					onValueChanged={(value) =>
+					onValueChanged={(value) => {
 						onConditionChange({
 							...condition,
 							value,
-						})
-					}
+						});
+
+						sendMessage(
+							Liferay.Language.get('condition-completed')
+						);
+					}}
 					value={condition.value}
 				/>
 			) : null}
@@ -123,6 +144,34 @@ export default function Condition({
 interface SelectorProps {
 	onValueChanged: (value: string) => void;
 	value: string | undefined;
+}
+
+function RolesSelector({onValueChanged, value}: SelectorProps) {
+	const roles = useCache({
+		fetcher: () => RulesService.getRoles(),
+		key: [CACHE_KEYS.roles],
+	});
+
+	if (!roles) {
+		return null;
+	}
+
+	return (
+		<RuleSelect
+			aria-label={sub(
+				Liferay.Language.get('select-x'),
+				Liferay.Language.get('role')
+			)}
+			items={roles.map((role) => ({
+				label: role.name,
+				value: role.roleId,
+			}))}
+			onSelectionChange={(value: React.Key) =>
+				onValueChanged(value as string)
+			}
+			selectedKey={value}
+		/>
+	);
 }
 
 function UserSelector({onValueChanged, value}: SelectorProps) {
@@ -137,6 +186,10 @@ function UserSelector({onValueChanged, value}: SelectorProps) {
 
 	return (
 		<RuleSelect
+			aria-label={sub(
+				Liferay.Language.get('select-x'),
+				Liferay.Language.get('user')
+			)}
 			items={users.map((user) => ({
 				label: user.screenName,
 				value: user.userId,
@@ -152,6 +205,10 @@ function UserSelector({onValueChanged, value}: SelectorProps) {
 function SegmentsSelector({onValueChanged, value}: SelectorProps) {
 	return (
 		<RuleSelect
+			aria-label={sub(
+				Liferay.Language.get('select-x'),
+				Liferay.Language.get('segment')
+			)}
 			items={Object.values(config.availableSegmentsEntries).map(
 				(segmentsEntry) => ({
 					label: segmentsEntry.name,

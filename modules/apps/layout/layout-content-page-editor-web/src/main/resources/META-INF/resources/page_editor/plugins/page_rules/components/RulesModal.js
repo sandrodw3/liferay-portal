@@ -9,31 +9,67 @@ import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import classNames from 'classnames';
 import {useId} from 'frontend-js-components-web';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
+import {v4 as uuidv4} from 'uuid';
 
-import {addRule} from '../../../app/actions/index';
-import updateRule from '../../../app/actions/updateRule';
+import {LAYOUT_DATA_ITEM_TYPES} from '../../../app/config/constants/layoutDataItemTypes';
 import {useDispatch, useSelector} from '../../../app/contexts/StoreContext';
+import selectLayoutDataItemLabel from '../../../app/selectors/selectLayoutDataItemLabel';
+import addRule from '../../../app/thunks/addRule';
+import updateRule from '../../../app/thunks/updateRule';
 import {
 	RuleBuilderActionSection,
 	RuleBuilderConditionSection,
 } from './RuleBuilderSection';
+import ScreenReaderAnnouncerContext from './ScreenReaderContext';
 
 export default function RulesModal({editingRule, onCloseModal}) {
 	const {observer, onClose} = useModal({onClose: () => onCloseModal()});
 
+	const fragmentEntryLinks = useSelector((state) => state.fragmentEntryLinks);
 	const layoutData = useSelector((state) => state.layoutData);
+
+	const rules = layoutData.pageRules;
 
 	const dispatch = useDispatch();
 	const nameId = useId();
-
-	const {rules = []} = layoutData;
 
 	const [name, setName] = useState(
 		editingRule?.name || getDefaultName(rules)
 	);
 
 	const [nameError, setNameError] = useState(false);
+
+	const [actions, setActions] = useState(
+		() => editingRule?.actions || [{id: uuidv4}]
+	);
+	const [conditions, setConditions] = useState(
+		() => editingRule?.conditions || [{id: uuidv4}]
+	);
+	const [conditionType, setConditionType] = useState('all');
+
+	const layoutDataItems = useMemo(() => {
+		const items = [];
+
+		Object.values(layoutData.items).forEach((item) => {
+			if (
+				item.type !== LAYOUT_DATA_ITEM_TYPES.collectionItem &&
+				item.type !== LAYOUT_DATA_ITEM_TYPES.fragmentDropZone &&
+				item.type !== LAYOUT_DATA_ITEM_TYPES.fragmentDropZone &&
+				item.type !== LAYOUT_DATA_ITEM_TYPES.root
+			) {
+				items.push({
+					label: selectLayoutDataItemLabel(
+						{fragmentEntryLinks},
+						item
+					),
+					value: item.itemId,
+				});
+			}
+		});
+
+		return items;
+	}, [layoutData, fragmentEntryLinks]);
 
 	const onSave = () => {
 		if (!name) {
@@ -42,33 +78,27 @@ export default function RulesModal({editingRule, onCloseModal}) {
 			return;
 		}
 
+		const filteredActions = actions.filter((action) => action.itemId);
+		const filteredConditions = conditions.filter(
+			(condition) => condition.value
+		);
+
 		if (editingRule) {
-			const nextLayoutData = {
-				...layoutData,
-				rules: rules.map((rule) => {
-					if (rule.id === editingRule.id) {
-						return {id: editingRule.id, name};
-					}
-
-					return rule;
-				}),
-			};
-
 			dispatch(
 				updateRule({
-					layoutData: nextLayoutData,
+					actions: filteredActions,
+					conditions: filteredConditions,
+					name,
+					ruleId: editingRule.id,
 				})
 			);
 		}
 		else {
-			const nextLayoutData = {
-				...layoutData,
-				rules: [...rules, {id: nameId, name}],
-			};
-
 			dispatch(
 				addRule({
-					layoutData: nextLayoutData,
+					actions: filteredActions,
+					conditions: filteredConditions,
+					name,
 				})
 			);
 		}
@@ -132,9 +162,30 @@ export default function RulesModal({editingRule, onCloseModal}) {
 					)}
 				</p>
 
-				<RuleBuilderConditionSection />
+				<ScreenReaderAnnouncerContext>
+					<div
+						aria-label={Liferay.Language.get('conditions')}
+						role="group"
+					>
+						<RuleBuilderConditionSection
+							conditionType={conditionType}
+							conditions={conditions}
+							setConditionType={setConditionType}
+							setConditions={setConditions}
+						/>
+					</div>
 
-				<RuleBuilderActionSection />
+					<div
+						aria-label={Liferay.Language.get('actions')}
+						role="group"
+					>
+						<RuleBuilderActionSection
+							actions={actions}
+							layoutDataItems={layoutDataItems}
+							setActions={setActions}
+						/>
+					</div>
+				</ScreenReaderAnnouncerContext>
 			</ClayModal.Body>
 
 			<ClayModal.Footer
