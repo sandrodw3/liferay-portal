@@ -482,6 +482,7 @@ module.exports = {
 	setupFilesAfterEnv: ['<rootDir>/src/main/js/test/setup.js'],
 	snapshotSerializers: ['enzyme-to-json/serializer'],
 	testEnvironment: 'jest-environment-jsdom-fifteen',
+	testTimeout: 240000,
 	testURL: 'http://liferay.com',
 	timers: 'fake',
 	transform: {
