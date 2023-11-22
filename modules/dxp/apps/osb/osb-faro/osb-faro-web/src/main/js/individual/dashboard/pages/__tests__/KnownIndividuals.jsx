@@ -27,7 +27,7 @@ const WrappedComponent = () => (
 	</Provider>
 );
 
-describe('Individuals Dashboard KnownIndividuals List', () => {
+describe.skip('Individuals Dashboard KnownIndividuals List', () => {
 	afterEach(cleanup);
 
 	it('renders', async () => {

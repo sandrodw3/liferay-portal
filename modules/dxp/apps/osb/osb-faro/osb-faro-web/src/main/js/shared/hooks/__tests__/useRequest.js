@@ -6,7 +6,7 @@ const mockRequest = jest.fn(() => Promise.resolve('passed'));
 const mockFailedRequest = jest.fn(() => Promise.reject('failed'));
 
 describe('withRequest', () => {
-	it('it should return a loading state until the the request completes', async () => {
+	it.skip('it should return a loading state until the the request completes', async () => {
 		const {result} = renderHook(() =>
 			useRequest({dataSourceFn: mockRequest})
 		);

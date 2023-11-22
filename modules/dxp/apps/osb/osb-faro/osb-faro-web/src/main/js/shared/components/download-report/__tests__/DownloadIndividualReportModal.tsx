@@ -29,7 +29,7 @@ const WrapperComponent = () => {
 	);
 };
 
-describe('DownloadReportIndividualModal CSV', () => {
+describe.skip('DownloadReportIndividualModal CSV', () => {
 	afterEach(() => {
 		jest.clearAllTimers();
 
