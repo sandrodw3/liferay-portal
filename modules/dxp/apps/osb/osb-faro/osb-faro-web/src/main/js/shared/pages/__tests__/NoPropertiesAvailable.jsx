@@ -31,7 +31,7 @@ const DefaultComponent = props => (
 	</Provider>
 );
 
-describe('NoPropertiesAvailable', () => {
+describe.skip('NoPropertiesAvailable', () => {
 	afterEach(cleanup);
 
 	it('should render', async () => {

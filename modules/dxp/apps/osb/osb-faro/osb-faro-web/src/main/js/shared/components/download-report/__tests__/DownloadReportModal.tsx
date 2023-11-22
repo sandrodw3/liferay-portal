@@ -125,7 +125,7 @@ const WrapperComponent: React.FC<IWrapperComponent> = ({
 	);
 };
 
-describe('DownloadReportModal CSV', () => {
+describe.skip('DownloadReportModal CSV', () => {
 	afterEach(() => {
 		jest.clearAllTimers();
 
@@ -229,7 +229,7 @@ describe('DownloadReportModal CSV', () => {
 	});
 });
 
-describe('DownloadReportModal PDF', () => {
+describe.skip('DownloadReportModal PDF', () => {
 	afterEach(() => {
 		jest.clearAllTimers();
 

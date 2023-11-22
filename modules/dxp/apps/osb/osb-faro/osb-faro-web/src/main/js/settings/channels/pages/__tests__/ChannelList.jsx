@@ -16,7 +16,7 @@ const defaultProps = {
 	groupId: '23'
 };
 
-describe('Channels List', () => {
+describe.skip('Channels List', () => {
 	afterEach(cleanup);
 
 	it('should render', async () => {

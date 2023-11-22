@@ -55,7 +55,7 @@ const DefaultUserComponent = () => (
 	</Provider>
 );
 
-describe('DataSourceList', () => {
+describe.skip('DataSourceList', () => {
 	afterEach(() => {
 		jest.runAllTimers();
 

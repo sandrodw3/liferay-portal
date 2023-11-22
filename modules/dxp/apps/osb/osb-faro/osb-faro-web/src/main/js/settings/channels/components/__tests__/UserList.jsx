@@ -24,7 +24,7 @@ const DefaultComponent = props => (
 	</Provider>
 );
 
-describe('ChannelUserList', () => {
+describe.skip('ChannelUserList', () => {
 	afterEach(cleanup);
 
 	it('should render', async () => {

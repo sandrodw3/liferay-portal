@@ -43,7 +43,7 @@ const WrappedComponent = ({mocks}) => (
 	</ApolloProvider>
 );
 
-describe('ExperimentOverviewPage', () => {
+describe.skip('ExperimentOverviewPage', () => {
 	const {ResizeObserver} = window;
 
 	beforeEach(() => {

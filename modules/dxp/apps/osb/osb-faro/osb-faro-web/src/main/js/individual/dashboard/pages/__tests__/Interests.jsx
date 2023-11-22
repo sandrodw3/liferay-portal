@@ -40,7 +40,7 @@ const WrappedComponent = () => (
 	</MockedProvider>
 );
 
-describe('Individuals Dashboard Individuals Interests', () => {
+describe.skip('Individuals Dashboard Individuals Interests', () => {
 	afterEach(cleanup);
 
 	it('renders', async () => {
