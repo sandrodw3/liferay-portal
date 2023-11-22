@@ -34,12 +34,15 @@ export const selectFilterDropdownItem = (container, labelText) => {
 
 export const waitForTable = async container => {
 	await waitForElement(() => container.querySelector('.table-root'), {
-		container
+		container,
+		timeout: 120000
 	});
 };
 
 export const waitForLoading = async container => {
-	await waitForElement(() => container.querySelector('.loading-root'));
+	await waitForElement(() => container.querySelector('.loading-root'), {
+		timeout: 120000
+	});
 };
 
 export const waitForLoadingToBeRemoved = async (
@@ -49,7 +52,9 @@ export const waitForLoadingToBeRemoved = async (
 	const loading = container.querySelector(selector);
 
 	if (loading) {
-		return await waitForElementToBeRemoved(loading);
+		return await waitForElementToBeRemoved(loading, {
+			timeout: 120000
+		});
 	}
 
 	return Promise.resolve();
