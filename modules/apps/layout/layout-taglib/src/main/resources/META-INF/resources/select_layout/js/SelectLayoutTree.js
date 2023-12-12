@@ -9,6 +9,7 @@ import ClayEmptyState from '@clayui/empty-state';
 import {ClayCheckbox} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
+import classnames from 'classnames';
 import {debounce, fetch, getOpener, openToast, sub} from 'frontend-js-web';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 
@@ -276,13 +277,27 @@ export function SelectLayoutTree({
 
 								<ClayIcon symbol={item.icon} />
 
-								<div className="d-flex">
+								<div
+									className={classnames('d-flex', {
+										'align-items-center c-ml-1':
+											Liferay.FeatureFlags['LPS-196847'],
+									})}
+								>
 									<span
 										className="flex-grow-0"
 										title={item.url}
 									>
 										{item.name}
 									</span>
+
+									{Liferay.FeatureFlags['LPS-196847'] &&
+										item.hasGuestViewPermission ===
+											false && (
+											<ClayIcon
+												className="c-ml-1 c-mt-0"
+												symbol="lock"
+											/>
+										)}
 								</div>
 							</ClayTreeView.ItemStack>
 
@@ -319,13 +334,31 @@ export function SelectLayoutTree({
 
 										<ClayIcon symbol={item.icon} />
 
-										<div className="d-flex">
+										<div
+											className={classnames('d-flex', {
+												'align-items-center c-ml-1':
+													Liferay.FeatureFlags[
+														'LPS-196847'
+													],
+											})}
+										>
 											<span
 												className="flex-grow-0"
 												title={item.url}
 											>
 												{item.name}
 											</span>
+
+											{Liferay.FeatureFlags[
+												'LPS-196847'
+											] &&
+												item.hasGuestViewPermission ===
+													false && (
+													<ClayIcon
+														className="c-ml-1 c-mt-0"
+														symbol="lock"
+													/>
+												)}
 										</div>
 									</ClayTreeView.Item>
 								)}
