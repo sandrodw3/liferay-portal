@@ -172,6 +172,7 @@ const MillerColumnsItem = ({
 		description,
 		draggable,
 		hasChild,
+		hasGuestViewPermission,
 		hasDuplicatedFriendlyURL = false,
 		id: itemId,
 		itemIndex,
@@ -440,21 +441,45 @@ const MillerColumnsItem = ({
 			)}
 
 			<ClayLayout.ContentCol className="c-pl-1" expand>
-				<div className="list-group-title text-truncate-inline">
+				<div
+					className={classNames(
+						'list-group-title text-truncate-inline',
+						{
+							'align-items-center':
+								Liferay.FeatureFlags['LPS-196847'],
+						}
+					)}
+				>
 					{viewUrl ? (
-						<ClayLink
-							aria-label={
-								Liferay.FeatureFlags['LPS-174417'] &&
-								hasDuplicatedFriendlyURL
-									? `${title}. ${warningMessage}`
-									: title
-							}
-							className="text-truncate"
-							href={viewUrl}
-							target={target}
-						>
-							{title}
-						</ClayLink>
+						<>
+							<ClayLink
+								aria-label={
+									Liferay.FeatureFlags['LPS-174417'] &&
+									hasDuplicatedFriendlyURL
+										? `${title}. ${warningMessage}`
+										: title
+								}
+								className="text-truncate"
+								href={viewUrl}
+								target={target}
+							>
+								{title}
+							</ClayLink>
+							{Liferay.FeatureFlags['LPS-196847'] &&
+								!hasGuestViewPermission && (
+									<span
+										className="lfr-portal-tooltip miller-columns-item--restricted__icon"
+										data-title={Liferay.Language.get(
+											'restricted-page'
+										)}
+									>
+										<ClayIcon
+											className="c-mt-0 icon-monospaced text-secondary"
+											symbol="lock"
+										/>
+									</span>
+								)}
+						</>
 					) : (
 						<span className="text-truncate">{title}</span>
 					)}
