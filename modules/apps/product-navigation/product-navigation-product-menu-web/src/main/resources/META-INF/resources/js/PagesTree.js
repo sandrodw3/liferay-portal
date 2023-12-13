@@ -199,7 +199,9 @@ function TreeItem({
 							{item.name}
 						</a>
 					) : (
-						<span>{item.name}</span>
+						<span className="text-truncate" title={item.name}>
+							{item.name}
+						</span>
 					)}
 				</div>
 			</ClayTreeView.ItemStack>
@@ -271,7 +273,12 @@ function TreeItem({
 									) : null}
 								</a>
 							) : (
-								<span>{item.name}</span>
+								<span
+									className="text-truncate"
+									title={item.name}
+								>
+									{item.name}
+								</span>
 							)}
 						</div>
 					</ClayTreeView.Item>
