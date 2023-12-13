@@ -189,14 +189,26 @@ function TreeItem({
 				<div className="align-items-center d-flex pl-2">
 					{item.regularURL ? (
 						<a
-							className="flex-grow-1 text-decoration-none text-truncate w-100"
+							className="align-items-center c-gap-2 d-flex flex-grow-1 text-decoration-none text-truncate w-100"
 							data-tooltip-floating="true"
 							href={item.regularURL}
 							tabIndex="-1"
 							target={item.target}
-							title={item.name}
 						>
-							{item.name}
+							<span
+								className="lfr-portal-tooltip text-truncate"
+								data-title={item.name}
+							>
+								{item.name}
+							</span>
+
+							<ClayIcon
+								className="c-mt-0 flex-shrink-0 lfr-portal-tooltip"
+								data-title={Liferay.Language.get(
+									'restricted-page'
+								)}
+								symbol="lock"
+							/>
 						</a>
 					) : (
 						<span className="text-truncate" title={item.name}>
@@ -251,17 +263,25 @@ function TreeItem({
 											? `${item.name}. ${warningMessage}`
 											: item.name
 									}
-									className="flex-grow-1 text-decoration-none text-truncate-inline"
+									className="align-items-center c-gap-2 d-flex flex-grow-1 text-decoration-none text-truncate-inline"
 									href={item.regularURL}
 									tabIndex="-1"
 									target={item.target}
 								>
 									<span
-										className="text-truncate"
+										className="lfr-portal-tooltip text-truncate"
 										data-title={item.name}
 									>
 										{item.name}
 									</span>
+
+									<ClayIcon
+										className="c-mt-0 flex-shrink-0 lfr-portal-tooltip"
+										data-title={Liferay.Language.get(
+											'restricted-page'
+										)}
+										symbol="lock"
+									/>
 
 									{Liferay.FeatureFlags['LPS-174417'] &&
 									item.hasDuplicatedFriendlyURL ? (
