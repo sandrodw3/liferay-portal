@@ -34,7 +34,7 @@ exports[`AddOnsList should render 1`] = `
                 >
                   +
                 </b>
-                5,000
+                5000
               </span>
               <span
                 class="text-secondary"
@@ -102,7 +102,7 @@ exports[`AddOnsList should render 1`] = `
                 >
                   +
                 </b>
-                5,000,000
+                5.000.000
               </span>
               <span
                 class="text-secondary"

@@ -90,13 +90,13 @@ exports[`UsageOverview should render 1`] = `
                         <span
                           class="metric-current"
                         >
-                          2,057
+                          2057
                         </span>
                          of 
                         <span
                           class="metric-limit"
                         >
-                          105,000
+                          105.000
                         </span>
                       </span>
                       <span
@@ -108,7 +108,7 @@ exports[`UsageOverview should render 1`] = `
                     <div
                       class="text-muted small semibold"
                     >
-                      Enterprise Plan 95,000 + 5,000 Add-On (2x)
+                      Enterprise Plan 95.000 + 5000 Add-On (2x)
                     </div>
                   </div>
                 </div>
@@ -157,13 +157,13 @@ exports[`UsageOverview should render 1`] = `
                         <span
                           class="metric-current"
                         >
-                          100,023
+                          100.023
                         </span>
                          of 
                         <span
                           class="metric-limit"
                         >
-                          7,000,000
+                          7.000.000
                         </span>
                       </span>
                       <span
@@ -175,7 +175,7 @@ exports[`UsageOverview should render 1`] = `
                     <div
                       class="text-muted small semibold"
                     >
-                      Enterprise Plan 2,000,000 + 5,000,000 Add-On (1x)
+                      Enterprise Plan 2.000.000 + 5.000.000 Add-On (1x)
                     </div>
                   </div>
                 </div>
@@ -278,7 +278,7 @@ exports[`UsageOverview should render 1`] = `
                           <span
                             class="limit-amount semibold"
                           >
-                            100,000
+                            100.000
                           </span>
                           <span
                             class="text-secondary"
@@ -298,7 +298,7 @@ exports[`UsageOverview should render 1`] = `
                           <span
                             class="limit-amount semibold"
                           >
-                            60,000,000
+                            60.000.000
                           </span>
                           <span
                             class="text-secondary"
@@ -343,7 +343,7 @@ exports[`UsageOverview should render 1`] = `
                           <span
                             class="limit-amount semibold"
                           >
-                            5,000
+                            5000
                           </span>
                           <span
                             class="text-secondary"
@@ -364,7 +364,7 @@ exports[`UsageOverview should render 1`] = `
                           <span
                             class="limit-amount semibold"
                           >
-                            5,000,000
+                            5.000.000
                           </span>
                           <span
                             class="text-secondary"
@@ -429,7 +429,7 @@ exports[`UsageOverview should render 1`] = `
                           >
                             +
                           </b>
-                          5,000
+                          5000
                         </span>
                         <span
                           class="text-secondary"
@@ -497,7 +497,7 @@ exports[`UsageOverview should render 1`] = `
                           >
                             +
                           </b>
-                          5,000,000
+                          5.000.000
                         </span>
                         <span
                           class="text-secondary"

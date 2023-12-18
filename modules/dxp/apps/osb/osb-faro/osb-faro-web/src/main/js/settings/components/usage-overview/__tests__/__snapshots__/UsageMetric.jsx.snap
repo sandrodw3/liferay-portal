@@ -39,7 +39,7 @@ exports[`UsageMetric should render 1`] = `
             <span
               class="metric-limit"
             >
-              7,000,000
+              7.000.000
             </span>
           </span>
           <span
@@ -51,7 +51,7 @@ exports[`UsageMetric should render 1`] = `
         <div
           class="text-muted small semibold"
         >
-          Enterprise Plan 2,000,000 + 5,000,000 Add-On (1x)
+          Enterprise Plan 2.000.000 + 5.000.000 Add-On (1x)
         </div>
       </div>
     </div>
