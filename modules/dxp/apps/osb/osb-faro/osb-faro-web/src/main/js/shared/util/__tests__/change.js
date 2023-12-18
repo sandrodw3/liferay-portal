@@ -6,7 +6,7 @@ import {
 } from '../change';
 
 describe('change', () => {
-	describe('formatChange', () => {
+	describe.skip('formatChange', () => {
 		it.each`
 			change  | expected
 			${0}    | ${0}

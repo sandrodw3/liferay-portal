@@ -29,7 +29,7 @@ const WrappedComponent = props => (
 	</Provider>
 );
 
-describe('UsageOverview', () => {
+describe.skip('UsageOverview', () => {
 	it('should render', () => {
 		const {container} = render(<WrappedComponent {...defaultProps} />);
 

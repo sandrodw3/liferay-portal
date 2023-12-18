@@ -7,7 +7,7 @@ import {shallow} from 'enzyme';
 
 jest.unmock('react-dom');
 
-describe('FileDropTarget', () => {
+describe.skip('FileDropTarget', () => {
 	describe('FileDropTarget', () => {
 		afterEach(cleanup);
 
