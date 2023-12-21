@@ -93,14 +93,34 @@ export default function PagesTree({
 				return false;
 			}
 
-			return fetch(moveItemURL, {
+			fetch(moveItemURL, {
 				body: Liferay.Util.objectToURLSearchParams({
 					parentPlid: parentItem.plid,
 					plid: item.plid,
 					priority,
 				}),
 				method: 'post',
-			}).catch(() => openErrorToast());
+			})
+				.then((response) => response.json())
+				.then(({errorMessage}) => {
+					if (errorMessage) {
+						openErrorToast(errorMessage);
+
+						return false;
+					}
+					openToast({
+						message: Liferay.Language.get(
+							'your-request-processed-successfully'
+						),
+						toastProps: {
+							autoClose: 5000,
+						},
+						type: 'success',
+					});
+
+					return true;
+				})
+				.catch(() => openErrorToast());
 		},
 		[moveItemURL]
 	);
