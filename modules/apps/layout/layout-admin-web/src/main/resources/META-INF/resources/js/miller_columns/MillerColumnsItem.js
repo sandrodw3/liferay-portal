@@ -471,10 +471,14 @@ const MillerColumnsItem = ({
 					{Liferay.FeatureFlags['LPS-196847'] &&
 						!hasGuestViewPermission && (
 							<span
+								aria-label={Liferay.Language.get(
+									'restricted-page'
+								)}
 								className="c-ml-2 lfr-portal-tooltip miller-columns-item--restricted__icon"
 								data-title={Liferay.Language.get(
 									'restricted-page'
 								)}
+								title={Liferay.Language.get('restricted-page')}
 							>
 								<ClayIcon
 									className="c-mt-0 text-4 text-secondary"
