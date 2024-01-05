@@ -176,11 +176,20 @@ function TreeItem({
 				{Liferay.FeatureFlags['LPS-196847'] &&
 				item.id !== '0' &&
 				!item.hasGuestViewPermission ? (
-					<ClayIcon
+					<span
+						aria-label={Liferay.Language.get(
+							'restricted-page'
+						)}
 						className="c-ml-2 lfr-portal-tooltip"
-						data-title={Liferay.Language.get('restricted-page')}
-						symbol="lock"
-					/>
+						title={Liferay.Language.get(
+							'restricted-page'
+						)}
+					>
+						<ClayIcon
+							className="lfr-portal-tooltip text-4"
+							symbol="lock"
+						/>
+					</span>
 				) : null}
 			</ClayTreeView.ItemStack>
 
@@ -216,13 +225,20 @@ function TreeItem({
 
 						{Liferay.FeatureFlags['LPS-196847'] &&
 						!childItem.hasGuestViewPermission ? (
-							<ClayIcon
-								className="c-ml-2 lfr-portal-tooltip"
-								data-title={Liferay.Language.get(
+							<span
+								aria-label={Liferay.Language.get(
 									'restricted-page'
 								)}
-								symbol="lock"
-							/>
+								className="c-ml-2 lfr-portal-tooltip"
+								title={Liferay.Language.get(
+									'restricted-page'
+								)}
+							>
+								<ClayIcon
+									className="lfr-portal-tooltip text-4"
+									symbol="lock"
+								/>
+							</span>
 						) : null}
 					</ClayTreeView.Item>
 				)}
