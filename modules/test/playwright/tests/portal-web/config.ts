@@ -12,5 +12,6 @@ export const config = {
 	timeout: 60 * 1000,
 	use: {
 		...devices['Desktop Chrome'],
+		storageState: 'tmp/.auth/user.json',
 	},
 };
