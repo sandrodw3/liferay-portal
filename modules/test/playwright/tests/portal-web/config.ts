@@ -6,6 +6,7 @@
 import {devices} from '@playwright/test';
 
 export const config = {
+	dependencies: ['setup'],
 	name: 'portal',
 	testDir: 'tests/portal-web',
 	timeout: 60 * 1000,
