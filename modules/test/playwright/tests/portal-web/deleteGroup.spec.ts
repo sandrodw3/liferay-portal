@@ -9,8 +9,8 @@ import {serviceHelpersTest} from '../../fixtures/serviceHelpers.fixture';
 
 export const test = mergeTests(serviceHelpersTest);
 
-test('delete a group', async ({
-	_serviceHelpers
-}) => {
-	await _serviceHelpers.groupAdmin.deleteGroup("33081");
+test('delete a group', async ({_serviceHelpers, page}) => {
+	await page.goto('/');
+
+	await _serviceHelpers.groupAdmin.deleteGroup('33081');
 });
