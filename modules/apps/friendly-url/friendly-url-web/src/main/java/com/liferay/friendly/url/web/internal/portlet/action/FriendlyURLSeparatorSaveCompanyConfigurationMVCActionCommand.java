@@ -29,6 +29,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.service.impl.LayoutLocalServiceHelper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -100,6 +102,8 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
+		List<String> urlSeparators = new ArrayList<>();
+
 		for (FriendlyURLResolver friendlyURLResolver :
 				FriendlyURLResolverRegistryUtil.
 					getFriendlyURLResolversAsCollection()) {
@@ -136,6 +140,20 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 					if (!urlSeparator.endsWith(StringPool.SLASH)) {
 						urlSeparator = urlSeparator + StringPool.SLASH;
 					}
+
+					if (urlSeparators.contains(urlSeparator)) {
+						fieldValidationErrorsJSONArray.put(
+							JSONUtil.put(
+								friendlyURLResolver.getKey(),
+								_language.get(
+									themeDisplay.getLocale(),
+									"friendly-url-separator-error-other-" +
+										"asset-type-may-use-this-prefix")));
+
+						return null;
+					}
+
+					urlSeparators.add(urlSeparator);
 
 					_validateURLSeparator(
 						themeDisplay.getCompanyId(),
