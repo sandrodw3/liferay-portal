@@ -26,6 +26,8 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
+import java.util.Locale;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
@@ -131,6 +133,10 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 						urlSeparator = urlSeparator + StringPool.SLASH;
 					}
 
+					_validateURLSeparator(
+						friendlyURLResolver.getKey(), themeDisplay.getLocale(),
+						urlSeparator, fieldValidationErrorsJSONArray);
+
 					if (fieldValidationErrorsJSONArray.length() > 0) {
 						return null;
 					}
@@ -201,6 +207,29 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 		}
 
 		return redirect;
+	}
+
+	private void _validateURLSeparator(
+		String key, Locale locale, String urlSeparator,
+		JSONArray validationErrorsJSONArray) {
+
+		if (urlSeparator.length() < 3) {
+			validationErrorsJSONArray.put(
+				JSONUtil.put(
+					key,
+					_language.get(
+						locale, "friendly-url-separator-error-too-short")));
+
+			return;
+		}
+
+		if (urlSeparator.length() > 255) {
+			validationErrorsJSONArray.put(
+				JSONUtil.put(
+					key,
+					_language.get(
+						locale, "friendly-url-separator-error-too-long")));
+		}
 	}
 
 	@Reference
