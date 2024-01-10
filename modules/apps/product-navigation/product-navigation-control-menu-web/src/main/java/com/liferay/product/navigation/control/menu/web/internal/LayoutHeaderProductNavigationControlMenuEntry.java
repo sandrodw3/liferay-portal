@@ -82,7 +82,7 @@ public class LayoutHeaderProductNavigationControlMenuEntry
 
 		Writer writer = httpServletResponse.getWriter();
 
-		StringBundler sb = new StringBundler(28);
+		StringBundler sb = new StringBundler(30);
 
 		sb.append("<div class=\"");
 		sb.append(_getCssClass(httpServletRequest));
@@ -131,8 +131,10 @@ public class LayoutHeaderProductNavigationControlMenuEntry
 			if (FeatureFlagManagerUtil.isEnabled("LPS-196847") &&
 				!_hasGuestViewPermission(layout) && !layout.isPrivateLayout()) {
 
-				sb.append("<span class=\"align-items-center c-ml-3 d-flex ");
-				sb.append("lfr-portal-tooltip text-white\" data-title=\" ");
+				sb.append("<span aria-label=\"");
+				sb.append(_language.get(httpServletRequest, "restricted-page"));
+				sb.append("\" class=\"align-items-center c-ml-3 d-flex ");
+				sb.append("lfr-portal-tooltip text-white\" title=\"");
 				sb.append(_language.get(httpServletRequest, "restricted-page"));
 				sb.append("\">");
 
