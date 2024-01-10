@@ -18,9 +18,10 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -63,21 +64,33 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 			throw new PortletException(principalException);
 		}
 
-		_friendlyURLSeparatorConfigurationManager.
-			updateFriendlyURLSeparatorCompanyConfiguration(
-				themeDisplay.getCompanyId(),
-				_getFriendlyURLSeparators(actionRequest));
+		JSONArray fieldValidationErrorsJSONArray =
+			_jsonFactory.createJSONArray();
 
-		SessionMessages.add(
-			actionRequest, "requestProcessed",
-			_language.get(
-				themeDisplay.getLocale(),
-				"your-request-completed-successfully"));
+		String friendlyURLSeparators = _getFriendlyURLSeparators(
+			actionRequest, themeDisplay, fieldValidationErrorsJSONArray);
 
-		sendRedirect(actionRequest, actionResponse);
+		if (fieldValidationErrorsJSONArray.length() == 0) {
+			_friendlyURLSeparatorConfigurationManager.
+				updateFriendlyURLSeparatorCompanyConfiguration(
+					themeDisplay.getCompanyId(), friendlyURLSeparators);
+
+			addSuccessMessage(actionRequest, actionResponse);
+		}
+		else {
+			hideDefaultSuccessMessage(actionRequest);
+		}
+
+		sendRedirect(
+			actionRequest, actionResponse,
+			_getRedirect(
+				actionRequest, fieldValidationErrorsJSONArray, themeDisplay));
 	}
 
-	private String _getFriendlyURLSeparators(ActionRequest actionRequest) {
+	private String _getFriendlyURLSeparators(
+		ActionRequest actionRequest, ThemeDisplay themeDisplay,
+		JSONArray fieldValidationErrorsJSONArray) {
+
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
 		for (FriendlyURLResolver friendlyURLResolver :
@@ -94,6 +107,14 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 						actionRequest, friendlyURLResolver.getKey());
 
 					if (Validator.isNull(urlSeparator)) {
+						fieldValidationErrorsJSONArray.put(
+							JSONUtil.put(
+								friendlyURLResolver.getKey(),
+								_language.get(
+									themeDisplay.getLocale(),
+									"friendly-url-separator-error-can-not-be-" +
+										"empty")));
+
 						return null;
 					}
 
@@ -103,6 +124,10 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 					if (!urlSeparator.endsWith(StringPool.SLASH)) {
 						urlSeparator = urlSeparator + StringPool.SLASH;
+					}
+
+					if (fieldValidationErrorsJSONArray.length() > 0) {
+						return null;
 					}
 
 					return JSONUtil.put(
@@ -116,6 +141,63 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 		return jsonArray.toString();
 	}
 
+	private String _getRedirect(
+		ActionRequest actionRequest, JSONArray fieldValidationErrorsJSONArray,
+		ThemeDisplay themeDisplay) {
+
+		String redirect = ParamUtil.getString(actionRequest, "redirect");
+
+		if (Validator.isNull(redirect)) {
+			return redirect;
+		}
+
+		String namespace = _portal.getPortletNamespace(themeDisplay.getPpid());
+
+		redirect = HttpComponentsUtil.removeParameter(
+			redirect, namespace + "errors");
+
+		boolean validSeparators = false;
+
+		if (fieldValidationErrorsJSONArray.length() == 0) {
+			validSeparators = true;
+		}
+
+		if (!validSeparators) {
+			redirect = HttpComponentsUtil.addParameter(
+				redirect, namespace + "errors",
+				JSONUtil.put(
+					"errorMessage",
+					_language.get(
+						themeDisplay.getLocale(),
+						"friendly-url-separator-error-changes-could-not-be-" +
+							"save-due-to-some-errors")
+				).put(
+					"fields", fieldValidationErrorsJSONArray
+				).toString());
+		}
+
+		for (FriendlyURLResolver friendlyURLResolver :
+				FriendlyURLResolverRegistryUtil.
+					getFriendlyURLResolversAsCollection()) {
+
+			if (!friendlyURLResolver.isURLSeparatorConfigurable()) {
+				continue;
+			}
+
+			redirect = HttpComponentsUtil.removeParameter(
+				redirect, namespace + friendlyURLResolver.getKey());
+
+			if (!validSeparators) {
+				redirect = HttpComponentsUtil.addParameter(
+					redirect, namespace + friendlyURLResolver.getKey(),
+					ParamUtil.getString(
+						actionRequest, friendlyURLResolver.getKey()));
+			}
+		}
+
+		return redirect;
+	}
+
 	@Reference
 	private FriendlyURLSeparatorConfigurationManager
 		_friendlyURLSeparatorConfigurationManager;
@@ -125,5 +207,8 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private Portal _portal;
 
 }

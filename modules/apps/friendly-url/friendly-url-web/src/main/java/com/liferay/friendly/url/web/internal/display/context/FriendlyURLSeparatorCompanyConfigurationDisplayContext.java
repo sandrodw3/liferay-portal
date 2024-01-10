@@ -8,6 +8,7 @@ package com.liferay.friendly.url.web.internal.display.context;
 import com.liferay.friendly.url.configuration.manager.FriendlyURLSeparatorConfigurationManager;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -19,6 +20,7 @@ import com.liferay.portal.kernel.portlet.FriendlyURLResolverRegistryUtil;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Mikel Lorza
  */
@@ -36,10 +40,12 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 	public FriendlyURLSeparatorCompanyConfigurationDisplayContext(
 		FriendlyURLSeparatorConfigurationManager
 			friendlyURLSeparatorConfigurationManager,
-		JSONFactory jsonFactory, Language language, ThemeDisplay themeDisplay) {
+		HttpServletRequest httpServletRequest, JSONFactory jsonFactory,
+		Language language, ThemeDisplay themeDisplay) {
 
 		_friendlyURLSeparatorConfigurationManager =
 			friendlyURLSeparatorConfigurationManager;
+		_httpServletRequest = httpServletRequest;
 		_jsonFactory = jsonFactory;
 		_language = language;
 		_themeDisplay = themeDisplay;
@@ -77,7 +83,7 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 					_getURLSeparator(
 						configuredURLSeparatorsJSONArray,
 						friendlyURLResolver.getDefaultURLSeparator(),
-						friendlyURLResolver.getKey())));
+						_httpServletRequest, friendlyURLResolver.getKey())));
 		}
 
 		Collections.sort(
@@ -114,6 +120,23 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 		return _configurableFriendlyURLSeparatorsJSONArray;
 	}
 
+	public JSONObject getErrorsJSONObject() {
+		String errors = ParamUtil.getString(_httpServletRequest, "errors");
+
+		try {
+			if (Validator.isNotNull(errors)) {
+				return _jsonFactory.createJSONObject(errors);
+			}
+		}
+		catch (JSONException jsonException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(jsonException);
+			}
+		}
+
+		return _jsonFactory.createJSONObject();
+	}
+
 	public Map<String, Object> getSeparatorFieldsProps() {
 		return HashMapBuilder.<String, Object>put(
 			"fields", getConfigurableFriendlyURLSeparatorsJSONArray()
@@ -139,7 +162,13 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 
 	private String _getURLSeparator(
 		JSONArray configuredURLSeparatorsJSONArray, String defaultURLSeparator,
-		String key) {
+		HttpServletRequest httpServletRequest, String key) {
+
+		String urlSeparator = ParamUtil.getString(httpServletRequest, key);
+
+		if (Validator.isNotNull(urlSeparator)) {
+			return urlSeparator;
+		}
 
 		if (JSONUtil.isEmpty(configuredURLSeparatorsJSONArray)) {
 			return defaultURLSeparator;
@@ -163,6 +192,7 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 	private JSONArray _configurableFriendlyURLSeparatorsJSONArray;
 	private final FriendlyURLSeparatorConfigurationManager
 		_friendlyURLSeparatorConfigurationManager;
+	private final HttpServletRequest _httpServletRequest;
 	private final JSONFactory _jsonFactory;
 	private final Language _language;
 	private final ThemeDisplay _themeDisplay;

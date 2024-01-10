@@ -113,8 +113,8 @@ public class FriendlyURLSeparatorPortalSettingsConfigurationScreenWrapper
 				FriendlyURLSeparatorCompanyConfigurationDisplayContext.class.
 					getName(),
 				new FriendlyURLSeparatorCompanyConfigurationDisplayContext(
-					_friendlyURLSeparatorConfigurationManager, _jsonFactory,
-					_language,
+					_friendlyURLSeparatorConfigurationManager,
+					httpServletRequest, _jsonFactory, _language,
 					(ThemeDisplay)httpServletRequest.getAttribute(
 						WebKeys.THEME_DISPLAY)));
 		}
