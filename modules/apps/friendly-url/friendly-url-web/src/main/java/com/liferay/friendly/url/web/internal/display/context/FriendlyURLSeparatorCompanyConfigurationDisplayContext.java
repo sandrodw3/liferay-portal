@@ -97,7 +97,14 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 					portletDisplay.getNamespace() +
 						friendlyURLSeparator.getKey()
 				).put(
-					"value", friendlyURLSeparator.getUrlSeparator()
+					"value",
+					() -> {
+						String urlSeparator =
+							friendlyURLSeparator.getUrlSeparator();
+
+						return urlSeparator.replaceAll(
+							StringPool.SLASH, StringPool.BLANK);
+					}
 				));
 		}
 

@@ -7,6 +7,7 @@ package com.liferay.friendly.url.web.internal.portlet.action;
 
 import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
 import com.liferay.friendly.url.configuration.manager.FriendlyURLSeparatorConfigurationManager;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -94,6 +95,14 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 					if (Validator.isNull(urlSeparator)) {
 						return null;
+					}
+
+					if (!urlSeparator.startsWith(StringPool.SLASH)) {
+						urlSeparator = StringPool.SLASH + urlSeparator;
+					}
+
+					if (!urlSeparator.endsWith(StringPool.SLASH)) {
+						urlSeparator = urlSeparator + StringPool.SLASH;
 					}
 
 					return JSONUtil.put(
