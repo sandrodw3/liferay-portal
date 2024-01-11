@@ -108,6 +108,10 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 						String urlSeparator =
 							friendlyURLSeparator.getUrlSeparator();
 
+						if (_hasErrors()) {
+							return urlSeparator;
+						}
+
 						return urlSeparator.replaceAll(
 							StringPool.SLASH, StringPool.BLANK);
 					}
@@ -184,6 +188,16 @@ public class FriendlyURLSeparatorCompanyConfigurationDisplayContext {
 		}
 
 		return StringPool.BLANK;
+	}
+
+	private boolean _hasErrors() {
+		if (Validator.isNotNull(
+				ParamUtil.getString(_httpServletRequest, "errors"))) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
