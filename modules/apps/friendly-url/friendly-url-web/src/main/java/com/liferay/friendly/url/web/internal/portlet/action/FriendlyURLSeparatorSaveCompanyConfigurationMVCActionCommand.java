@@ -246,6 +246,16 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 			return;
 		}
 
+		if (Validator.isNumber(
+				urlSeparator.substring(1, urlSeparator.length() - 1))) {
+
+			fieldsValidationErrorsJSONObject.put(
+				key,
+				_language.get(
+					locale,
+					"friendly-url-separator-error-can-not-be-a-number"));
+		}
+
 		String friendlyURL = urlSeparator.substring(
 			0, urlSeparator.length() - 1);
 
