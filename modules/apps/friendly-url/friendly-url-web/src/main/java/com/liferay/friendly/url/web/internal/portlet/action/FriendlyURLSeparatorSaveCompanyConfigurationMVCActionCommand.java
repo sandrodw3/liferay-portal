@@ -8,7 +8,6 @@ package com.liferay.friendly.url.web.internal.portlet.action;
 import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
 import com.liferay.friendly.url.configuration.manager.FriendlyURLSeparatorConfigurationManager;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -27,11 +26,11 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
+import java.util.Locale;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
-
-import org.apache.commons.lang.StringUtils;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -68,13 +67,13 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 			throw new PortletException(principalException);
 		}
 
-		JSONArray fieldValidationErrorsJSONArray =
-			_jsonFactory.createJSONArray();
+		JSONObject fieldsValidationErrorsJSONObject =
+			_jsonFactory.createJSONObject();
 
 		String friendlyURLSeparators = _getFriendlyURLSeparators(
-			actionRequest, themeDisplay, fieldValidationErrorsJSONArray);
+			actionRequest, themeDisplay, fieldsValidationErrorsJSONObject);
 
-		if (fieldValidationErrorsJSONArray.length() == 0) {
+		if (fieldsValidationErrorsJSONObject.length() == 0) {
 			_friendlyURLSeparatorConfigurationManager.
 				updateFriendlyURLSeparatorCompanyConfiguration(
 					themeDisplay.getCompanyId(), friendlyURLSeparators);
@@ -88,12 +87,12 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 		sendRedirect(
 			actionRequest, actionResponse,
 			_getRedirect(
-				actionRequest, fieldValidationErrorsJSONArray, themeDisplay));
+				actionRequest, fieldsValidationErrorsJSONObject, themeDisplay));
 	}
 
 	private String _getFriendlyURLSeparators(
 		ActionRequest actionRequest, ThemeDisplay themeDisplay,
-		JSONArray fieldValidationErrorsJSONArray) {
+		JSONObject fieldsValidationErrorsJSONObject) {
 
 		JSONObject friendlyURLSeparatorsJSONObject =
 			_jsonFactory.createJSONObject();
@@ -113,13 +112,12 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 						actionRequest, friendlyURLResolver.getKey());
 
 					if (Validator.isNull(friendlyURLSeparator)) {
-						fieldValidationErrorsJSONArray.put(
-							JSONUtil.put(
-								friendlyURLResolver.getKey(),
-								_language.get(
-									themeDisplay.getLocale(),
-									"friendly-url-separator-error-can-not-be-" +
-										"empty")));
+						fieldsValidationErrorsJSONObject.put(
+							friendlyURLResolver.getKey(),
+							_language.get(
+								themeDisplay.getLocale(),
+								"friendly-url-separator-error-can-not-be-" +
+									"empty"));
 
 						return null;
 					}
@@ -128,8 +126,19 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 						_friendlyURLNormalizer.normalizeWithPeriodsAndSlashes(
 							friendlyURLSeparator);
 
-					return StringUtils.substringBetween(
-						friendlyURLSeparator, StringPool.SLASH);
+					friendlyURLSeparator =
+						StringPool.SLASH + friendlyURLSeparator +
+							StringPool.SLASH;
+
+					_validateURLSeparator(
+						friendlyURLResolver.getKey(), themeDisplay.getLocale(),
+						friendlyURLSeparator, fieldsValidationErrorsJSONObject);
+
+					if (fieldsValidationErrorsJSONObject.length() > 0) {
+						return null;
+					}
+
+					return friendlyURLSeparator;
 				});
 		}
 
@@ -137,7 +146,8 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 	}
 
 	private String _getRedirect(
-		ActionRequest actionRequest, JSONArray fieldValidationErrorsJSONArray,
+		ActionRequest actionRequest,
+		JSONObject fieldsValidationErrorsJSONObject,
 		ThemeDisplay themeDisplay) {
 
 		String redirect = ParamUtil.getString(actionRequest, "redirect");
@@ -153,7 +163,7 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 		boolean validSeparators = false;
 
-		if (fieldValidationErrorsJSONArray.length() == 0) {
+		if (fieldsValidationErrorsJSONObject.length() == 0) {
 			validSeparators = true;
 		}
 
@@ -167,7 +177,7 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 						"friendly-url-separator-error-changes-could-not-be-" +
 							"save-due-to-some-errors")
 				).put(
-					"fields", fieldValidationErrorsJSONArray
+					"fields", fieldsValidationErrorsJSONObject
 				).toString());
 		}
 
@@ -191,6 +201,26 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 		}
 
 		return redirect;
+	}
+
+	private void _validateURLSeparator(
+		String key, Locale locale, String urlSeparator,
+		JSONObject fieldsValidationErrorsJSONObject) {
+
+		if (urlSeparator.length() < 3) {
+			fieldsValidationErrorsJSONObject.put(
+				key,
+				_language.get(
+					locale, "friendly-url-separator-error-too-short"));
+
+			return;
+		}
+
+		if (urlSeparator.length() > 255) {
+			fieldsValidationErrorsJSONObject.put(
+				key,
+				_language.get(locale, "friendly-url-separator-error-too-long"));
+		}
 	}
 
 	@Reference
