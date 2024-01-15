@@ -8,6 +8,7 @@ package com.liferay.friendly.url.web.internal.portlet.action;
 import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
 import com.liferay.friendly.url.configuration.manager.FriendlyURLSeparatorConfigurationManager;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.LayoutFriendlyURLException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -25,8 +26,10 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.service.impl.LayoutLocalServiceHelper;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -220,6 +223,30 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 			fieldsValidationErrorsJSONObject.put(
 				key,
 				_language.get(locale, "friendly-url-separator-error-too-long"));
+
+			return;
+		}
+
+		try {
+			_layoutLocalServiceHelper.validateFriendlyURLKeyword(
+				urlSeparator.substring(0, urlSeparator.length() - 1));
+		}
+		catch (LayoutFriendlyURLException layoutFriendlyURLException) {
+			FriendlyURLResolver friendlyURLResolver =
+				FriendlyURLResolverRegistryUtil.getFriendlyURLResolver(
+					layoutFriendlyURLException.getKeywordConflict() +
+						StringPool.SLASH);
+
+			if ((friendlyURLResolver == null) ||
+				!Objects.equals(friendlyURLResolver.getKey(), key)) {
+
+				fieldsValidationErrorsJSONObject.put(
+					key,
+					_language.get(
+						locale,
+						"friendly-url-separator-error-other-asset-type-may-" +
+							"use-this-prefix"));
+			}
 		}
 	}
 
@@ -235,6 +262,9 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private LayoutLocalServiceHelper _layoutLocalServiceHelper;
 
 	@Reference
 	private Portal _portal;
