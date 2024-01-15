@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.LayoutFriendlyURLLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
@@ -134,6 +135,7 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 							StringPool.SLASH;
 
 					_validateURLSeparator(
+						themeDisplay.getCompanyId(),
 						friendlyURLResolver.getKey(), themeDisplay.getLocale(),
 						friendlyURLSeparator, fieldsValidationErrorsJSONObject);
 
@@ -207,7 +209,7 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 	}
 
 	private void _validateURLSeparator(
-		String key, Locale locale, String urlSeparator,
+		long companyId, String key, Locale locale, String urlSeparator,
 		JSONObject fieldsValidationErrorsJSONObject) {
 
 		if (urlSeparator.length() < 3) {
@@ -226,6 +228,9 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 			return;
 		}
+
+		String friendlyURL = urlSeparator.substring(
+			0, urlSeparator.length() - 1);
 
 		try {
 			_layoutLocalServiceHelper.validateFriendlyURLKeyword(
@@ -248,6 +253,25 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 							"use-this-prefix"));
 			}
 		}
+
+		int layoutFriendlyURLCountContainsURLSeparator =
+			_layoutFriendlyURLLocalService.getLayoutFriendlyURLsCount(
+				companyId, urlSeparator, false);
+
+		int layoutFriendlyURLCountExactMatch =
+			_layoutFriendlyURLLocalService.getLayoutFriendlyURLsCount(
+				companyId, friendlyURL, true);
+
+		if ((layoutFriendlyURLCountContainsURLSeparator > 0) ||
+			(layoutFriendlyURLCountExactMatch > 0)) {
+
+			fieldsValidationErrorsJSONObject.put(
+				key,
+				_language.get(
+					locale,
+					"friendly-url-separator-error-other-asset-type-may-use-" +
+						"this-prefix"));
+		}
 	}
 
 	@Reference
@@ -262,6 +286,9 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommand
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private LayoutFriendlyURLLocalService _layoutFriendlyURLLocalService;
 
 	@Reference
 	private LayoutLocalServiceHelper _layoutLocalServiceHelper;
