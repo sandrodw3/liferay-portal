@@ -5,8 +5,8 @@
 
 import {defineConfig} from '@playwright/test';
 
-import {config as exportImportWeb} from './tests/export-import-web/config';
 import {config as batchPlanner} from './tests/batch-planner/config';
+import {config as exportImportWeb} from './tests/export-import-web/config';
 import {config as setup} from './tests/global.setup.config';
 import {config as object} from './tests/object-web/config';
 import {config as portalWeb} from './tests/portal-web/config';
