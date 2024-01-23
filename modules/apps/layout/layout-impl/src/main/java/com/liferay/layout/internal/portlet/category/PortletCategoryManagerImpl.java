@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.portlet.PortletConfigFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactory;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.PortletItemLocalService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
@@ -374,8 +375,7 @@ public class PortletCategoryManagerImpl implements PortletCategoryManager {
 			Set<String> highlightedPortletIds,
 			HttpServletRequest httpServletRequest,
 			Set<String> layoutDecodedPortletNames,
-			PortletCategory portletCategory, ThemeDisplay themeDisplay)
-		throws Exception {
+			PortletCategory portletCategory, ThemeDisplay themeDisplay) {
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
@@ -421,10 +421,27 @@ public class PortletCategoryManagerImpl implements PortletCategoryManager {
 						LayoutTypePortlet layoutTypePortlet =
 							themeDisplay.getLayoutTypePortlet();
 
+						LayoutTypePortlet masterLayoutTypePortlet = null;
+
+						if (layout.getMasterLayoutPlid() > 0) {
+							Layout masterLayout =
+								_layoutLocalService.fetchLayout(
+									layout.getMasterLayoutPlid());
+
+							if (masterLayout != null) {
+								masterLayoutTypePortlet =
+									(LayoutTypePortlet)
+										masterLayout.getLayoutType();
+							}
+						}
+
 						if (layoutDecodedPortletNames.contains(
 								portlet.getPortletId()) ||
 							layoutTypePortlet.hasPortletId(
-								portlet.getPortletId())) {
+								portlet.getPortletId()) ||
+							((masterLayoutTypePortlet != null) &&
+							 masterLayoutTypePortlet.hasPortletId(
+								 portlet.getPortletId()))) {
 
 							return true;
 						}
@@ -469,6 +486,9 @@ public class PortletCategoryManagerImpl implements PortletCategoryManager {
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
 
 	@Reference
 	private Portal _portal;
