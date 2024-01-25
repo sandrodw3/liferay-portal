@@ -518,6 +518,11 @@ public class ContentPageEditorDisplayContext {
 					"/layout_content_page_editor" +
 						"/get_layout_page_template_collections")
 			).put(
+				"getMasterLayoutNoninstanciablePortletsURL",
+				_getResourceURL(
+					"/layout_content_page_editor" +
+						"/get_master_layout_noninstanciable_portlets")
+			).put(
 				"getPageContentsURL",
 				_getResourceURL("/layout_content_page_editor/get_page_content")
 			).put(
