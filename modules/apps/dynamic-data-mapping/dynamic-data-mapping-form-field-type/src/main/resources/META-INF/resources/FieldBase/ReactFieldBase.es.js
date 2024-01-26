@@ -221,7 +221,7 @@ export function FieldBase({
 			return (
 				<input
 					data-field-name={fieldName}
-					data-language-id={locale}
+					data-languageid={locale}
 					key={locale}
 					name={name.replace(editingLanguageId, locale)}
 					type="hidden"
