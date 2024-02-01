@@ -4,7 +4,6 @@
  */
 
 import ClayEmptyState from '@clayui/empty-state';
-import {ReactPortal} from '@liferay/frontend-js-react-web';
 import classNames from 'classnames';
 import React from 'react';
 
@@ -21,7 +20,7 @@ export default function ItemConfigurationSidebar() {
 	const itemConfigurationOpen = useSelector(selectItemConfigurationOpen);
 
 	return (
-		<ReactPortal className="cadmin">
+		<div className="cadmin">
 			<div
 				className={classNames(
 					'page-editor__item-configuration-sidebar',
@@ -47,6 +46,6 @@ export default function ItemConfigurationSidebar() {
 					/>
 				)}
 			</div>
-		</ReactPortal>
+		</div>
 	);
 }
