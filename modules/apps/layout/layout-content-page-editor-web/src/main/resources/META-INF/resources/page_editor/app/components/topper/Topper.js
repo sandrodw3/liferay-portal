@@ -185,121 +185,124 @@ function TopperContent({
 		keyboardMovementSource?.itemId === item.itemId;
 
 	return (
-		<div
-			className={classNames(className, 'page-editor__topper', {
-				'active': isActive,
-				'drag-over-bottom':
-					isValidDrop &&
-					dropTargetPosition === TARGET_POSITIONS.BOTTOM,
-				'drag-over-left':
-					isValidDrop && dropTargetPosition === TARGET_POSITIONS.LEFT,
-				'drag-over-middle':
-					isValidDrop &&
-					dropTargetPosition === TARGET_POSITIONS.MIDDLE,
-				'drag-over-right':
-					isValidDrop &&
-					dropTargetPosition === TARGET_POSITIONS.RIGHT,
-				'drag-over-top':
-					isValidDrop && dropTargetPosition === TARGET_POSITIONS.TOP,
-				'dragged': isDraggingSource,
-				'drop-container': isDropContainer,
-				'highlighted': isHighlighted,
-				'hovered': isHovered,
-			})}
-			data-name={name}
-			onClick={(event) => {
-				event.stopPropagation();
+		<div ref={canBeDragged ? itemHandlerRef : null}>
+			<div
+				className={classNames(className, 'page-editor__topper', {
+					'active': isActive,
+					'drag-over-bottom':
+						isValidDrop &&
+						dropTargetPosition === TARGET_POSITIONS.BOTTOM,
+					'drag-over-left':
+						isValidDrop &&
+						dropTargetPosition === TARGET_POSITIONS.LEFT,
+					'drag-over-middle':
+						isValidDrop &&
+						dropTargetPosition === TARGET_POSITIONS.MIDDLE,
+					'drag-over-right':
+						isValidDrop &&
+						dropTargetPosition === TARGET_POSITIONS.RIGHT,
+					'drag-over-top':
+						isValidDrop &&
+						dropTargetPosition === TARGET_POSITIONS.TOP,
+					'dragged': isDraggingSource,
+					'drop-container': isDropContainer,
+					'highlighted': isHighlighted,
+					'hovered': isHovered,
+				})}
+				data-name={name}
+				onClick={(event) => {
+					event.stopPropagation();
 
-				if (isDraggingSource) {
-					return;
-				}
+					if (isDraggingSource) {
+						return;
+					}
 
-				selectItem(item.itemId);
-			}}
-			onMouseLeave={(event) => {
-				event.stopPropagation();
+					selectItem(item.itemId);
+				}}
+				onMouseLeave={(event) => {
+					event.stopPropagation();
 
-				if (isDraggingSource) {
-					return;
-				}
+					if (isDraggingSource) {
+						return;
+					}
 
-				if (isHovered) {
-					hoverItem(null);
-				}
-			}}
-			onMouseOver={(event) => {
-				event.stopPropagation();
+					if (isHovered) {
+						hoverItem(null);
+					}
+				}}
+				onMouseOver={(event) => {
+					event.stopPropagation();
 
-				if (isDraggingSource) {
-					return;
-				}
+					if (isDraggingSource) {
+						return;
+					}
 
-				hoverItem(item.itemId);
-			}}
-			ref={canBeDragged ? itemHandlerRef : null}
-		>
-			{isActive || isHighlighted ? (
-				<TopperLabel
-					itemElement={itemElement}
-					style={isDraggingSource ? {opacity: 0} : {}}
-				>
-					<ul className="tbar-nav">
-						{canBeDragged && (
-							<li
-								className="page-editor__topper__drag-handler page-editor__topper__item tbar-item"
-								ref={topperHandlerRef}
-							>
-								<ClayIcon
-									className="page-editor__topper__drag-icon page-editor__topper__icon"
-									symbol="drag"
-								/>
-							</li>
-						)}
-
-						<li
-							className="d-inline-block page-editor__topper__item page-editor__topper__title tbar-item tbar-item-expand"
-							id={topperLabelId}
-						>
-							{name}
-						</li>
-
-						{item.type === LAYOUT_DATA_ITEM_TYPES.fragment && (
-							<li className="page-editor__topper__item tbar-item">
-								<ClayButton
-									aria-label={Liferay.Language.get(
-										'comments'
-									)}
-									displayType="unstyled"
-									size="sm"
-									title={Liferay.Language.get('comments')}
+					hoverItem(item.itemId);
+				}}
+			>
+				{isActive || isHighlighted ? (
+					<TopperLabel
+						itemElement={itemElement}
+						style={isDraggingSource ? {opacity: 0} : {}}
+					>
+						<ul className="tbar-nav">
+							{canBeDragged && (
+								<li
+									className="page-editor__topper__drag-handler page-editor__topper__item tbar-item"
+									ref={topperHandlerRef}
 								>
 									<ClayIcon
-										className="page-editor__topper__icon"
-										onClick={() => {
-											dispatch(
-												switchSidebarPanel({
-													sidebarOpen: true,
-													sidebarPanelId: commentsPanelId,
-												})
-											);
-										}}
-										symbol="comments"
+										className="page-editor__topper__drag-icon page-editor__topper__icon"
+										symbol="drag"
 									/>
-								</ClayButton>
-							</li>
-						)}
+								</li>
+							)}
 
-						{canUpdatePageStructure && isActive && (
-							<li className="page-editor__topper__item tbar-item">
-								<TopperItemActions item={item} />
+							<li
+								className="d-inline-block page-editor__topper__item page-editor__topper__title tbar-item tbar-item-expand"
+								id={topperLabelId}
+							>
+								{name}
 							</li>
-						)}
-					</ul>
-				</TopperLabel>
-			) : null}
 
-			<div className="page-editor__topper__content" ref={targetRef}>
-				<TopperErrorBoundary>{children}</TopperErrorBoundary>
+							{item.type === LAYOUT_DATA_ITEM_TYPES.fragment && (
+								<li className="page-editor__topper__item tbar-item">
+									<ClayButton
+										aria-label={Liferay.Language.get(
+											'comments'
+										)}
+										displayType="unstyled"
+										size="sm"
+										title={Liferay.Language.get('comments')}
+									>
+										<ClayIcon
+											className="page-editor__topper__icon"
+											onClick={() => {
+												dispatch(
+													switchSidebarPanel({
+														sidebarOpen: true,
+														sidebarPanelId: commentsPanelId,
+													})
+												);
+											}}
+											symbol="comments"
+										/>
+									</ClayButton>
+								</li>
+							)}
+
+							{canUpdatePageStructure && isActive && (
+								<li className="page-editor__topper__item tbar-item">
+									<TopperItemActions item={item} />
+								</li>
+							)}
+						</ul>
+					</TopperLabel>
+				) : null}
+
+				<div className="page-editor__topper__content" ref={targetRef}>
+					<TopperErrorBoundary>{children}</TopperErrorBoundary>
+				</div>
 			</div>
 		</div>
 	);
