@@ -18,6 +18,7 @@ export class ApplicationsMenuPage {
 	private readonly instanceSettingsLink: Locator;
 	private readonly objectsMenuItem: Locator;
 	readonly page: Page;
+	private readonly systemSettingsLink: Locator;
 	private readonly usersAndOrganizationsItem: Locator;
 
 	constructor(page: Page) {
@@ -51,6 +52,10 @@ export class ApplicationsMenuPage {
 			name: 'Objects',
 		});
 		this.page = page;
+		this.systemSettingsLink = page.getByRole('menuitem', {
+			exact: true,
+			name: 'System Settings',
+		});
 		this.usersAndOrganizationsItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Users and Organizations',
@@ -102,6 +107,12 @@ export class ApplicationsMenuPage {
 	async goToControlPanel() {
 		await this.goto();
 		await this.controlPanelButton.click();
+	}
+
+	async goToSystemSettingsLink() {
+		await this.goto();
+		await this.controlPanelButton.click();
+		await this.systemSettingsLink.click();
 	}
 
 	async goToUsersAndOrganizations() {
