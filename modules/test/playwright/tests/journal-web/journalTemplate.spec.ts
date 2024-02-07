@@ -9,12 +9,15 @@ import {journalPages} from '../../fixtures/JournalPages';
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPageTest';
 import {loginTest} from '../../fixtures/loginTest';
+import {systemSettingsPageTest} from '../../fixtures/systemSettingsPageTest';
+import {getRandomString} from '../../utils/util';
 
 export const test = mergeTests(
 	apiHelpersTest,
 	applicationsMenuPageTest,
 	journalPages,
-	loginTest
+	loginTest,
+	systemSettingsPageTest
 );
 
 const RESERVED_VARIABLES = [
@@ -55,4 +58,39 @@ test('This is a test for LPS-153976. View reserved variables list under Journal 
 			page.getByRole('button', {exact: true, name: reservedVariable})
 		).toBeVisible();
 	}
+});
+
+test('This is a use case for LPS-116515. The new button and template edit action should be hidden when disable template creation in Dynamic Data Mapping.', async ({
+	journalEditTemplatePage,
+	journalPage,
+	page,
+	systemSettingsPage,
+}) => {
+	const title = getRandomString();
+
+	await journalEditTemplatePage.addNewTemplate(title);
+
+	await expect(page.getByTitle(title, {exact: true})).toBeVisible();
+
+	await systemSettingsPage.disableProperty(
+		'Dynamic Data Mapping',
+		'Dynamic Data Mapping Web',
+		'Enable Template Creation'
+	);
+
+	await journalPage.goToTemplates();
+
+	await expect(page.getByText('New', {exact: true})).not.toBeVisible();
+
+	await page.getByRole('button', {exact: true, name: 'More actions'}).click();
+
+	await expect(
+		page.getByRole('menuitem', {exact: true, name: 'Edit'})
+	).not.toBeVisible();
+
+	await systemSettingsPage.enableProperty(
+		'Dynamic Data Mapping',
+		'Dynamic Data Mapping Web',
+		'Enable Template Creation'
+	);
 });
