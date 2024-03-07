@@ -7,6 +7,8 @@
 
 import {Locator, Page} from '@playwright/test';
 
+import {State} from '../../../fixtures/stateTest';
+
 type Viewport = 'Desktop' | 'Landscape Phone' | 'Portrait Phone' | 'Tablet';
 
 export class PageEditorPage {
@@ -58,9 +60,9 @@ export class PageEditorPage {
 		await this.page.getByRole('tab', {name: tab}).click();
 	}
 
-	async goToEditMode(site: Site, layout: Layout) {
+	async goToEditMode(state: State, layout: Layout) {
 		await this.page.goto(
-			`/web${site.friendlyUrlPath}${layout.friendlyUrlPath}?p_l_mode=edit`
+			`/web${state.siteUrl}${layout.friendlyUrlPath}?p_l_mode=edit`
 		);
 	}
 

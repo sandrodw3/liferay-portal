@@ -10,6 +10,7 @@ import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPageTest'
 import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
 import {loginTest} from '../../fixtures/loginTest';
+import {stateTest} from '../../fixtures/stateTest';
 import getRandomString from '../../utils/getRandomString';
 import {pageEditorPagesTest} from './fixtures/pageEditorPagesTest';
 import getFragmentDefinition from './utils/getFragmentDefinition';
@@ -23,7 +24,8 @@ export const test = mergeTests(
 	}),
 	loginTest(),
 	isolatedSiteTest,
-	pageEditorPagesTest
+	pageEditorPagesTest,
+	stateTest
 );
 
 type NonDesktopPanels = Array<{
@@ -63,6 +65,7 @@ test('shows correct sections on each configuration panel when viewport is not De
 	page,
 	pageEditorPage,
 	site,
+	state,
 }) => {
 	await page.goto('/');
 
@@ -83,7 +86,7 @@ test('shows correct sections on each configuration panel when viewport is not De
 
 	// Go to edit mode of page
 
-	await pageEditorPage.goToEditMode(site, layout);
+	await pageEditorPage.goToEditMode(state, layout);
 
 	// Switch to Tablet viewport and select the fragment
 
