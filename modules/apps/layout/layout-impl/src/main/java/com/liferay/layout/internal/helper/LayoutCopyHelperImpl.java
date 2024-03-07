@@ -10,6 +10,7 @@ import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.client.extension.model.ClientExtensionEntryRel;
 import com.liferay.client.extension.service.ClientExtensionEntryRelLocalService;
 import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.fragment.cache.FragmentEntryLinkCache;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.processor.PortletRegistry;
 import com.liferay.fragment.service.FragmentEntryLinkLocalService;
@@ -29,6 +30,7 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Image;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -75,6 +77,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -786,6 +789,9 @@ public class LayoutCopyHelperImpl implements LayoutCopyHelper {
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
+		Set<Locale> availableLocales = _language.getAvailableLocales(
+			targetLayout.getGroupId());
+
 		for (LayoutStructureItem layoutStructureItem :
 				layoutStructure.getLayoutStructureItems()) {
 
@@ -857,6 +863,11 @@ public class LayoutCopyHelperImpl implements LayoutCopyHelper {
 				_commentManager.deleteDiscussion(
 					FragmentEntryLink.class.getName(),
 					newFragmentEntryLink.getFragmentEntryLinkId());
+
+				for (Locale locale : availableLocales) {
+					_fragmentEntryLinkCache.removeFragmentEntryLinkCache(
+						newFragmentEntryLink, locale);
+				}
 			}
 			else {
 				newFragmentEntryLink =
@@ -929,10 +940,16 @@ public class LayoutCopyHelperImpl implements LayoutCopyHelper {
 	private CounterLocalService _counterLocalService;
 
 	@Reference
+	private FragmentEntryLinkCache _fragmentEntryLinkCache;
+
+	@Reference
 	private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
 
 	@Reference
 	private ImageLocalService _imageLocalService;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private LayoutClassedModelUsageLocalService
