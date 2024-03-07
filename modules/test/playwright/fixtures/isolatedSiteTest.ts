@@ -3,17 +3,18 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {mergeTests, test} from '@playwright/test';
+import {mergeTests} from '@playwright/test';
 
 import {ApiHelpers} from '../helpers/ApiHelpers';
 import getRandomString from '../utils/getRandomString';
 import {loginTest} from './loginTest';
+import {stateTest} from './stateTest';
 
-const isolatedSiteFixture = test.extend<{
+const isolatedSiteFixture = stateTest.extend<{
 	site: Site;
 }>({
 	site: [
-		async ({page}, use) => {
+		async ({page, state}, use) => {
 			await page.goto('/');
 
 			const apiHelpers = new ApiHelpers(page);
@@ -27,6 +28,8 @@ const isolatedSiteFixture = test.extend<{
 				site = await apiHelpers.headlessSite.createSite(
 					getRandomString()
 				);
+
+				state.siteUrl = site.friendlyUrlPath;
 
 				await page.goto(
 					`/group${site.friendlyUrlPath}/~/control_panel/manage/-/site/settings`
