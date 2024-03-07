@@ -8,6 +8,7 @@ package com.liferay.object.service.impl;
 import com.liferay.account.service.AccountEntryLocalService;
 import com.liferay.account.service.AccountEntryOrganizationRelLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.fragment.cache.FragmentEntryLinkCache;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.layout.model.LayoutClassedModelUsage;
 import com.liferay.layout.service.LayoutClassedModelUsageLocalService;
@@ -85,8 +86,6 @@ import com.liferay.petra.sql.dsl.Table;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
-import com.liferay.portal.kernel.cache.MultiVMPool;
-import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.dao.db.DB;
@@ -125,6 +124,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MethodHandler;
@@ -1738,10 +1738,6 @@ public class ObjectDefinitionLocalServiceImpl
 	}
 
 	private void _invalidatePortalCache(ObjectDefinition objectDefinition) {
-		PortalCache<String, String> portalCache =
-			(PortalCache<String, String>)_multiVMPool.getPortalCache(
-				FragmentEntryLink.class.getName());
-
 		List<LayoutClassedModelUsage> layoutClassedModelUsages =
 			_layoutClassedModelUsageLocalService.getLayoutClassedModelUsages(
 				objectDefinition.getCompanyId(),
@@ -1756,10 +1752,10 @@ public class ObjectDefinitionLocalServiceImpl
 				layoutClassedModelUsage.getGroupId());
 
 			for (Locale locale : availableLocales) {
-				portalCache.remove(
-					StringBundler.concat(
-						layoutClassedModelUsage.getContainerKey(),
-						StringPool.DASH, locale, StringPool.DASH, 0));
+				_fragmentEntryLinkCache.removeFragmentEntryLinkCache(
+					GetterUtil.getLong(
+						layoutClassedModelUsage.getContainerKey()),
+					locale);
 			}
 		}
 	}
@@ -2429,6 +2425,9 @@ public class ObjectDefinitionLocalServiceImpl
 		_dynamicQueryBatchIndexingActionableFactory;
 
 	@Reference
+	private FragmentEntryLinkCache _fragmentEntryLinkCache;
+
+	@Reference
 	private GroupLocalService _groupLocalService;
 
 	private final Map
@@ -2446,9 +2445,6 @@ public class ObjectDefinitionLocalServiceImpl
 
 	@Reference
 	private ListTypeLocalService _listTypeLocalService;
-
-	@Reference
-	private MultiVMPool _multiVMPool;
 
 	@Reference
 	private ObjectActionLocalService _objectActionLocalService;
