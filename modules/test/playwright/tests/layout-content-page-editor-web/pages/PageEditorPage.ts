@@ -7,16 +7,20 @@
 
 import {Locator, Page} from '@playwright/test';
 
+import {State} from '../../../fixtures/stateTest';
+
 type Viewport = 'Desktop' | 'Landscape Phone' | 'Portrait Phone' | 'Tablet';
 
 export class PageEditorPage {
 	readonly page: Page;
+	readonly state: State;
 	readonly redoButton: Locator;
 	readonly undoButton: Locator;
 	readonly undoHistory: Locator;
 
-	constructor(page: Page) {
+	constructor(page: Page, state: State) {
 		this.page = page;
+		this.state = state;
 
 		this.redoButton = page.getByTitle('Redo');
 		this.undoButton = page.getByTitle('Undo');
@@ -58,9 +62,9 @@ export class PageEditorPage {
 		await this.page.getByRole('tab', {name: tab}).click();
 	}
 
-	async goToEditMode(site: Site, layout: Layout) {
+	async goToEditMode(layout: Layout) {
 		await this.page.goto(
-			`/web${site.friendlyUrlPath}${layout.friendlyUrlPath}?p_l_mode=edit`
+			`/web${this.state.siteUrl}${layout.friendlyUrlPath}?p_l_mode=edit`
 		);
 	}
 

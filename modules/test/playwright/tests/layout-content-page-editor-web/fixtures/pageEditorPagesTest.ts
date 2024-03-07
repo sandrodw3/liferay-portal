@@ -5,15 +5,14 @@
 
 // @ts-ignore
 
-import {test} from '@playwright/test';
-
+import {stateTest} from '../../../fixtures/stateTest';
 import {PageEditorPage} from '../pages/PageEditorPage';
 
-const pageEditorPagesTest = test.extend<{
+const pageEditorPagesTest = stateTest.extend<{
 	pageEditorPage: PageEditorPage;
 }>({
-	pageEditorPage: async ({page}, use) => {
-		await use(new PageEditorPage(page));
+	pageEditorPage: async ({page, state}, use) => {
+		await use(new PageEditorPage(page, state));
 	},
 });
 
