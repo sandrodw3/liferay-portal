@@ -7,6 +7,7 @@ import {mergeTests, test} from '@playwright/test';
 
 import {ApiHelpers} from '../helpers/ApiHelpers';
 import getRandomString from '../utils/getRandomString';
+import {setSiteUrl} from '../utils/siteUrl';
 import {loginTest} from './loginTest';
 
 const isolatedSiteFixture = test.extend<{
@@ -27,6 +28,8 @@ const isolatedSiteFixture = test.extend<{
 				site = await apiHelpers.headlessSite.createSite(
 					getRandomString()
 				);
+
+				setSiteUrl(page, site.friendlyUrlPath);
 
 				await page.goto(
 					`/group${site.friendlyUrlPath}/~/control_panel/manage/-/site/settings`
