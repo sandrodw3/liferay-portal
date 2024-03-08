@@ -7,6 +7,8 @@
 
 import {Locator, Page} from '@playwright/test';
 
+import {getSiteUrl} from '../../../utils/siteUrl';
+
 type Viewport = 'Desktop' | 'Landscape Phone' | 'Portrait Phone' | 'Tablet';
 
 export class PageEditorPage {
@@ -58,9 +60,11 @@ export class PageEditorPage {
 		await this.page.getByRole('tab', {exact: true, name: tab}).click();
 	}
 
-	async goToEditMode(site: Site, layout: Layout) {
+	async goToEditMode(layout: Layout) {
+		const siteUrl = await getSiteUrl(this.page);
+
 		await this.page.goto(
-			`/web${site.friendlyUrlPath}${layout.friendlyUrlPath}?p_l_mode=edit`
+			`/web${siteUrl}${layout.friendlyUrlPath}?p_l_mode=edit`
 		);
 	}
 
