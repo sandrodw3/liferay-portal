@@ -427,3 +427,153 @@ aiCreateImageTest.only(
 		).toBeVisible();
 	}
 );
+
+scheduleTest(
+	'Create a web content scheduled',
+	async ({journalEditArticlePage, page, site}) => {
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		const title = getRandomString();
+
+		await journalEditArticlePage.fillTitle(title);
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				name: 'Schedule Publication',
+			}),
+			trigger: page.getByRole('button', {
+				name: 'Select and Confirm Publish Settings',
+			}),
+		});
+
+		await page.getByPlaceholder('YYYY-MM-DD HH:mm').fill('9987-11-26 13:00');
+
+		await page.getByRole('button', {exact: true, name: 'Schedule'}).click();
+
+		await page
+			.getByText(`Success:${title} will be published on 11/26/87 1:00 PM.`)
+			.waitFor();
+
+		await expect(
+			page.locator('span.label').filter({hasText: 'Scheduled'})
+		).toBeVisible();
+
+		await page.getByLabel(`Actions for ${title}`).waitFor();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				exact: true,
+				name: 'Edit',
+			}),
+			trigger: page.getByLabel(`Actions for ${title}`, {
+				exact: true,
+			}),
+		});
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				name: 'Schedule Publication',
+			}),
+			trigger: page.getByRole('button', {
+				name: 'Select and Confirm Publish Settings',
+			}),
+		});
+
+		await expect(page.getByPlaceholder('YYYY-MM-DD HH:mm')).toHaveValue('9987-11-26 13:00');
+
+	}
+);
+
+scheduleTest(
+	'Create a web content scheduled with workflow activated',
+	async ({journalEditArticlePage, page, site}) => {
+
+		await page.getByRole('menuitem', { name: 'Configuration' }).click();
+
+		await page.getByRole('menuitem', { name: 'Workflow' }).click();
+
+		const row = await page
+			.getByRole('row')
+			.filter({hasText: 'Web Content Article'});
+
+		await clickAndExpectToBeVisible({
+			target: page.getByRole('button', { name: 'Save' }),
+			trigger: row.getByRole('button', {name: 'Edit'}),
+		});
+
+		await row.getByTitle('Workflow Definition').selectOption({label: 'Single Approver'});
+
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		const title = getRandomString();
+
+		await journalEditArticlePage.fillTitle(title);
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				name: 'Schedule Publication and Submit for Workflow',
+			}),
+			trigger: page.getByRole('button', {
+				name: 'Select and Confirm Submit for Workflow Settings',
+			}),
+		});
+
+		await page.getByPlaceholder('YYYY-MM-DD HH:mm').fill('9987-11-26 13:00');
+
+		await page.getByRole('button', {exact: true, name: 'Submit for Workflow'}).click();
+
+		await page
+			.getByText(`Success:${title} has been scheduled and submitted for workflow.`)
+			.waitFor();
+
+		await expect(
+			page.locator('span.label').filter({hasText: 'Scheduled'})
+		).toBeVisible();
+
+		await page.getByLabel('Test Test User Profile').click();
+
+		await page.getByRole('menuitem', { name: 'My Workflow Tasks' }).click();
+
+		await page.getByRole('link', { name: 'Assigned to My Roles' }).click();
+
+		await page.getByRole('link', { name: 'Assign to Me' }).click();
+
+		await page.getByRole('button', { name: 'Done' }).click();
+
+		await page.getByRole('menuitem', { name: 'Approve' }).click();
+
+		await page.getByRole('button', { name: 'Done' }).click();
+
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		await page.getByLabel(`Actions for ${title}`).waitFor();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				exact: true,
+				name: 'Edit',
+			}),
+			trigger: page.getByLabel(`Actions for ${title}`, {
+				exact: true,
+			}),
+		});
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				name: 'Schedule Publication',
+			}),
+			trigger: page.getByRole('button', {
+				name: 'Select and Confirm Publish Settings',
+			}),
+		});
+
+		await expect(page.getByPlaceholder('YYYY-MM-DD HH:mm')).toHaveValue('9987-11-26 13:00');
+
+	}
+);
