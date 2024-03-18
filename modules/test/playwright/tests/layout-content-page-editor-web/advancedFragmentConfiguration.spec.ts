@@ -11,7 +11,7 @@ import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
 import {loginTest} from '../../fixtures/loginTest';
 import getRandomString from '../../utils/getRandomString';
-import {PORTLET_URLS} from '../../utils/portletUrls';
+import {fragmentsPagesTest} from '../fragment-web/fixtures/fragmentPagesTest';
 import {pageEditorPagesTest} from './fixtures/pageEditorPagesTest';
 import getContainerDefinition from './utils/getContainerDefinition';
 import getFragmentDefinition from './utils/getFragmentDefinition';
@@ -24,6 +24,7 @@ export const test = mergeTests(
 	featureFlagsTest({
 		'LPS-178052': true,
 	}),
+	fragmentsPagesTest,
 	loginTest(),
 	isolatedSiteTest,
 	pageEditorPagesTest
@@ -186,6 +187,7 @@ test('checks that the fragment is hidden from Site Search Results', async ({
 
 test('checks that the advanced configuration of a fragment appears in its corresponding tab', async ({
 	apiHelpers,
+	fragmentsPage,
 	page,
 	pageEditorPage,
 	site,
@@ -193,9 +195,7 @@ test('checks that the advanced configuration of a fragment appears in its corres
 
 	// Go to fragment editor
 
-	await page.goto(
-		`/group${site.friendlyUrlPath}${PORTLET_URLS.fragmentPage}`
-	);
+	await fragmentsPage.goto(site.friendlyUrlPath);
 
 	// Add a new fragment set
 
