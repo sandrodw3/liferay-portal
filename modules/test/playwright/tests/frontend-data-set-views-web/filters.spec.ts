@@ -60,7 +60,7 @@ test('Add the frontend data set sample widget', async ({
 
 		await tabHeading.click();
 
-		const filterButton = await page
+		const filterButton = page
 			.locator('.filters-dropdown')
 			.getByText('Filter');
 
@@ -68,12 +68,28 @@ test('Add the frontend data set sample widget', async ({
 
 		filterButton.click();
 
-		const filterDropdown = await page.locator('.dropdown-menu', {
+		const filterDropdown = page.locator('.dropdown-menu', {
 			hasText: 'Filters',
 		});
 
 		await expect(
 			filterDropdown.getByText('Client Extension')
 		).toBeInViewport();
+	});
+
+	await test.step('Assert that the filter client extension is working', async () => {
+		const filterButton = page
+			.locator('.filters-dropdown')
+			.getByText('Filter');
+
+		await expect(filterButton).toBeInViewport();
+
+		filterButton.click();
+
+		const clientExtensionMenuItem = page.getByText('Client Extension');
+
+		await expect(clientExtensionMenuItem).toBeInViewport();
+
+		await clientExtensionMenuItem.click();
 	});
 });
