@@ -9,7 +9,7 @@
 	"devDependencies": {
 		"@liferay/eslint-plugin": "1.5.0",
 		"@liferay/npm-scripts": "49.2.3",
-		"@playwright/test": "1.39.0",
+		"@playwright/test": "1.43.1",
 		"@types/node": "^20.9.0",
 		"@types/yauzl": "^2.10.3",
 		"ts-node": "^10.9.2",
