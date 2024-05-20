@@ -683,6 +683,13 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 				dropdownItem.setLabel(
 					_language.get(httpServletRequest, "to-be-reviewed"));
 			}
+		).add(
+			() -> FeatureFlagManagerUtil.isEnabled("LPD-25680"),
+			dropdownItem -> {
+				dropdownItem.putData("action", "customDate");
+				dropdownItem.setLabel(
+					_language.get(httpServletRequest, "custom-date"));
+			}
 		).build();
 	}
 
