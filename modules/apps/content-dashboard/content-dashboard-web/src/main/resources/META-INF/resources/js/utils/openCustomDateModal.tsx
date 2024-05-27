@@ -20,14 +20,24 @@ const NOT_SELECTED_OPTION = {
 type Props = {
 	dateTypes: Array<{label: string; value: string}>;
 	filterUrl: string;
-	selectedRange: string | undefined;
+	namespace: string;
+	selectedDateType: string | undefined;
+	selectedEndDate: string | undefined;
+	selectedStartDate: string | undefined;
 };
 
 export default function openCustomDateModal(props: Props) {
 	render(CustomDateModal, {...props}, document.createElement('div'));
 }
 
-function CustomDateModal({dateTypes, filterUrl, selectedRange}: Props) {
+function CustomDateModal({
+	dateTypes,
+	filterUrl,
+	namespace,
+	selectedDateType,
+	selectedEndDate,
+	selectedStartDate,
+}: Props) {
 	const {observer, onOpenChange, open} = useModal({
 		defaultOpen: true,
 		onClose: () => onOpenChange(false),
@@ -37,17 +47,19 @@ function CustomDateModal({dateTypes, filterUrl, selectedRange}: Props) {
 	const [dateType, setDateType] = useState(NOT_SELECTED_OPTION.value);
 
 	const rangeId = useId();
-	const [range, setRange] = useState<string | undefined>(selectedRange);
+	const [range, setRange] = useState<string | undefined>(
+		`${selectedStartDate} - ${selectedEndDate}`
+	);
 
 	const onSave = () => {
 		const url = new URL(filterUrl);
 
-		url.searchParams.set('dateType', dateType);
+		url.searchParams.set(`${namespace}dateType`, dateType);
 
 		const [start, end] = range!.split(' - ');
 
-		url.searchParams.set('startDate', start);
-		url.searchParams.set('endDate', end);
+		url.searchParams.set(`${namespace}startDate`, start);
+		url.searchParams.set(`${namespace}endDate`, end);
 
 		navigate(url.toString());
 	};

@@ -9,7 +9,10 @@ declare type Props = {
 		value: string;
 	}>;
 	filterUrl: string;
-	selectedRange: string | undefined;
+	namespace: string;
+	selectedDateType: string | undefined;
+	selectedEndDate: string | undefined;
+	selectedStartDate: string | undefined;
 };
 export default function openCustomDateModal(props: Props): void;
 export {};

@@ -214,7 +214,7 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 			} = data;
 
 			if (action === 'customDate') {
-				openCustomDateModal(data);
+				openCustomDateModal(JSON.parse(data.props));
 			}
 			else if (action === 'selectAssetCategory') {
 				selectAssetCategory(data);
