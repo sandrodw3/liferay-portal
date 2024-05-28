@@ -3,15 +3,20 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {Page} from '@playwright/test';
+import {Locator, Page} from '@playwright/test';
 
 import {PORTLET_URLS} from '../../../utils/portletUrls';
 
 export class MasterPagesPage {
 	readonly page: Page;
 
+	readonly newButton: Locator;
+	readonly publishButton: Locator;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.newButton = page.getByText('New', {exact: true});
+		this.publishButton = page.getByLabel('Publish Master', {exact: true});
 	}
 
 	async goto(siteUrl?: Site['friendlyUrlPath']) {
@@ -22,5 +27,21 @@ export class MasterPagesPage {
 
 	getTemplateCard(name: string) {
 		return this.page.locator('.card-page-item').filter({hasText: name});
+	}
+
+	async publishNewMasterTemplate(name: string) {
+		await this.newButton.click();
+		await this.page.getByLabel('Name').fill(name);
+		await this.page.getByRole('button', {name: 'Save'}).click();
+		await this.publishButton.waitFor();
+		await this.publishButton.click();
+	}
+
+	async clickMoreActions(name: string) {
+		await this.getTemplateCard(name).getByLabel('More actions').click();
+	}
+
+	async clickAndEdit(name: string) {
+		await this.getTemplateCard(name).getByLabel(name).click();
 	}
 }

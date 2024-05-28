@@ -7,13 +7,18 @@
 
 import {test} from '@playwright/test';
 
+import {PageEditorPage} from '../../../pages/layout-content-page-editor-web/PageEditorPage';
 import {MasterPagesPage} from '../pages/MasterPagesPage';
 
 const masterPagesTest = test.extend<{
 	masterPagesPage: MasterPagesPage;
+	pageEditorPage: PageEditorPage;
 }>({
 	masterPagesPage: async ({page}, use) => {
 		await use(new MasterPagesPage(page));
+	},
+	pageEditorPage: async ({page}, use) => {
+		await use(new PageEditorPage(page));
 	},
 });
 
