@@ -70,7 +70,7 @@ export class HeadlessDeliveryApiHelper {
 	}: createSitePageProps): Promise<Layout> {
 		return this.apiHelpers.post(
 			`${this.apiHelpers.baseUrl}${this.basePath}/sites/${siteId}/site-pages`,
-			{data: {pageDefinition, pagePermissions, title}}
+			{data: {page: pageDefinition, pagePermissions, title}}
 		);
 	}
 
