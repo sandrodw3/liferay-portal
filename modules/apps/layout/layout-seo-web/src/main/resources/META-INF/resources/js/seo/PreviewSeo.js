@@ -22,7 +22,7 @@ const PreviewSeo = ({
 	url = '',
 }) => {
 	const titleUrl = [
-		<div className="preview-seo-title text-truncate" key="title">
+		<div className="papa preview-seo-title text-truncate" key="title">
 			{title}
 
 			{titleSuffix && ` - ${titleSuffix}`}
