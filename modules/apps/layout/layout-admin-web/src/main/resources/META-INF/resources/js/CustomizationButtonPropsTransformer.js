@@ -11,7 +11,7 @@ export default function propsTransformer({
 		...otherProps,
 		onClick: () => {
 			const controlMenu = document.querySelector(
-				`#${portletNamespace}customizationBar .control-menu-level-2`
+				`#${portletNamespace}customizationBar .control-menu-level-2 papa`
 			);
 
 			controlMenu.classList.toggle('open');
