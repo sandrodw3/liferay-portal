@@ -335,7 +335,7 @@ export function getInitialTarget(source, layoutDataRef, fragmentEntryLinksRef) {
 				// This child is targetable
 
 				const childName = selectLayoutDataItemLabel(
-					{fragmentEntryLinks},
+					{fragmentEntryLinks, layoutData},
 					child
 				);
 
@@ -469,7 +469,7 @@ function getNextTarget(
 		}
 
 		const name = selectLayoutDataItemLabel(
-			{fragmentEntryLinks},
+			{fragmentEntryLinks, layoutData},
 			nextTargetItem
 		);
 
