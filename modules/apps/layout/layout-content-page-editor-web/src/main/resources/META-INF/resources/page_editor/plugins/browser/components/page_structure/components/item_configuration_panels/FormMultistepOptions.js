@@ -6,7 +6,7 @@
 import {useControlledState} from '@liferay/layout-js-components-web';
 import classNames from 'classnames';
 import {openModal} from 'frontend-js-web';
-import React from 'react';
+import React, {useCallback} from 'react';
 
 import {CheckboxField} from '../../../../../../app/components/fragment_configuration_fields/CheckboxField';
 import {SelectField} from '../../../../../../app/components/fragment_configuration_fields/SelectField';
@@ -15,6 +15,14 @@ import {
 	useItemLocalConfig,
 	useUpdateItemLocalConfig,
 } from '../../../../../../app/contexts/LocalConfigContext';
+import {
+	useDispatch,
+	useSelector,
+	useSelectorRef,
+} from '../../../../../../app/contexts/StoreContext';
+import selectLanguageId from '../../../../../../app/selectors/selectLanguageId';
+import {getStepperChild} from '../../../../../../app/utils/getStepperChild';
+import updateConfigurationValue from '../../../../../../app/utils/updateConfigurationValue';
 
 const FORM_TYPE_OPTIONS = [
 	{label: Liferay.Language.get('simple'), value: 'simple'},
@@ -30,6 +38,54 @@ export default function FormMultistepOptions({item, onValueSelect}) {
 
 	const [numberOfSteps, setNumberOfSteps] = useControlledState(
 		item.config.numberOfSteps
+	);
+
+	const dispatch = useDispatch();
+
+	const languageId = useSelector(selectLanguageId);
+
+	const layoutData = useSelectorRef((state) => state.layoutData).current;
+	const fragmentEntryLinks = useSelectorRef(
+		(state) => state.fragmentEntryLinks
+	).current;
+
+	const updateNumberOfSteps = useCallback(
+		(value) => {
+			setNumberOfSteps(value);
+
+			onValueSelect({numberOfSteps: value}).then(() => {
+				const stepperItem = getStepperChild(
+					item,
+					layoutData,
+					fragmentEntryLinks
+				);
+
+				if (!stepperItem) {
+					return;
+				}
+
+				const stepperFragment =
+					fragmentEntryLinks[stepperItem.config.fragmentEntryLinkId];
+
+				updateConfigurationValue({
+					configuration: stepperFragment.configuration,
+					dispatch,
+					fragmentEntryLink: stepperFragment,
+					languageId,
+					name: 'numberOfSteps',
+					value,
+				});
+			});
+		},
+		[
+			dispatch,
+			fragmentEntryLinks,
+			item,
+			languageId,
+			layoutData,
+			onValueSelect,
+			setNumberOfSteps,
+		]
 	);
 
 	return (
@@ -85,10 +141,9 @@ export default function FormMultistepOptions({item, onValueSelect}) {
 							},
 						},
 					}}
-					onValueSelect={(_, numberOfSteps) => {
-						setNumberOfSteps(numberOfSteps);
-						onValueSelect({numberOfSteps});
-					}}
+					onValueSelect={(_, numberOfSteps) =>
+						updateNumberOfSteps(numberOfSteps)
+					}
 					value={numberOfSteps || 2}
 				/>
 			) : null}
