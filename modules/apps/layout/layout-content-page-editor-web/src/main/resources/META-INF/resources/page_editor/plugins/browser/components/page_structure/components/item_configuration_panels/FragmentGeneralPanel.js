@@ -50,7 +50,9 @@ export function FragmentGeneralPanel({item}) {
 				!configurationRole &&
 				!(
 					fragmentEntryLink.fragmentEntryType ===
-						FRAGMENT_ENTRY_TYPES.input && !label
+						FRAGMENT_ENTRY_TYPES.input &&
+					!fragmentEntryLink.fieldTypes?.includes('stepper') &&
+					!label
 				)
 		) ?? [];
 

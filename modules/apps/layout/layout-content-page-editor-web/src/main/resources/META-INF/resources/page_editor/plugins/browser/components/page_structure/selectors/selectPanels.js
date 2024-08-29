@@ -326,7 +326,7 @@ export function selectPanels(activeItemId, activeItemType, state) {
 		};
 	}
 	else if (activeItem.type === LAYOUT_DATA_ITEM_TYPES.fragment) {
-		const {fragmentEntryKey, fragmentEntryType} =
+		const {fieldTypes, fragmentEntryKey, fragmentEntryType} =
 			state.fragmentEntryLinks[activeItem.config.fragmentEntryLinkId];
 
 		panelsIds = {
@@ -336,7 +336,8 @@ export function selectPanels(activeItemId, activeItemType, state) {
 				canUpdateCSSAdvancedOptions,
 			[PANEL_IDS.fragmentStyles]: haveAtLeastLimitedPermission,
 			[PANEL_IDS.fragmentGeneral]:
-				fragmentEntryType !== FRAGMENT_ENTRY_TYPES.input &&
+				(fragmentEntryType !== FRAGMENT_ENTRY_TYPES.input ||
+					fieldTypes.includes('stepper')) &&
 				!FRAGMENT_WITH_CUSTOM_PANEL.includes(fragmentEntryKey),
 			[PANEL_IDS.collectionAppliedFiltersGeneral]:
 				fragmentEntryKey ===
@@ -347,6 +348,7 @@ export function selectPanels(activeItemId, activeItemType, state) {
 				state.selectedViewportSize === VIEWPORT_SIZES.desktop,
 			[PANEL_IDS.formInputGeneral]:
 				fragmentEntryType === FRAGMENT_ENTRY_TYPES.input &&
+				!fieldTypes.includes('stepper') &&
 				state.selectedViewportSize === VIEWPORT_SIZES.desktop,
 		};
 
