@@ -60,7 +60,7 @@ export default function addFragment({
 			if (fieldTypes.includes('stepper')) {
 				const form = getState().layoutData.items[parentItemId];
 
-				params.initialEditableValues = {
+				params.editableValues = {
 					[FREEMARKER_FRAGMENT_ENTRY_PROCESSOR]: {
 						numberOfSteps: form.config.numberOfSteps,
 					},
