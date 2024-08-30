@@ -1,6 +1,8 @@
+[#assign numberOfSteps=configuration.numberOfSteps!2]
+
 <ol class="m-0 multi-step-nav [#if configuration.showTitles]multi-step-indicator-label-top[/#if] stepper-fragment">
-	[#list 1..configuration.numberOfSteps as i]
-		<li class="m-0 multi-step-item [#if i!=configuration.numberOfSteps]multi-step-item-expand[/#if]">
+	[#list 1..numberOfSteps as i]
+		<li class="m-0 multi-step-item [#if i!=numberOfSteps]multi-step-item-expand[/#if]">
 			<div class="multi-step-divider" />
 
 			<div class="multi-step-indicator">
