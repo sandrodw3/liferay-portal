@@ -7,7 +7,7 @@ import ClayButton from '@clayui/button';
 import ClayDropDown, {Align} from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import {FeatureIndicator} from 'frontend-js-components-web';
-import {openToast} from 'frontend-js-web';
+import {openModal, openToast} from 'frontend-js-web';
 import PropTypes from 'prop-types';
 import React, {useMemo, useState} from 'react';
 
@@ -33,8 +33,10 @@ import {
 	FORM_ERROR_TYPES,
 	getFormErrorDescription,
 } from '../../utils/getFormErrorDescription';
+import getPortletId from '../../utils/getPortletId';
 import hideFragment from '../../utils/hideFragment';
 import isInputFragment from '../../utils/isInputFragment';
+import isItemWidget from '../../utils/isItemWidget';
 import useHasRequiredChild from '../../utils/useHasRequiredChild';
 import SaveFragmentCompositionModal from '../SaveFragmentCompositionModal';
 import hasDropZoneChild from '../layout_data_items/hasDropZoneChild';
@@ -207,6 +209,64 @@ export default function TopperItemActions({disabled, item}) {
 				icon: 'trash',
 				label: Liferay.Language.get('delete'),
 			});
+		}
+
+		if (isItemWidget(item, fragmentEntryLinks)) {
+			const fragmentEntryLink =
+				fragmentEntryLinks[item.config.fragmentEntryLinkId];
+
+			const portletId = getPortletId(fragmentEntryLink.editableValues);
+
+			items.push({
+				type: 'divider',
+			});
+
+			items.push(
+				{
+					action: () =>
+						Liferay.Util.getPortletConfigurationIconAction(
+							`_${portletId}_exportImport`
+						)(),
+					icon: 'order-arrow',
+					label: Liferay.Language.get('export-import'),
+				},
+				{
+					action: () =>
+						Liferay.Util.getPortletConfigurationIconAction(
+							`_${portletId}_configuration`
+						)(),
+					icon: 'cog',
+					label: Liferay.Language.get('configuration'),
+				},
+				{
+					action: () => {
+						openModal({
+							onClose: () =>
+								Liferay.Portlet.refresh(
+									`#p_p_id_${portletId}_`
+								),
+							title: Liferay.Language.get('permissions'),
+							url: `http://localhost:8080/a984fb2a-9d99-a4e0-b534-c61e4e9f6fa9?p_p_id=com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet&p_p_lifecycle=0&p_p_state=pop_up&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_mvcPath=%2Fedit_permissions.jsp&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_portletResource=${portletId}&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_portletConfiguration=true&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_resourcePrimKey=17_LAYOUT_${portletId}&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_returnToFullPageURL=`,
+						});
+					},
+					label: Liferay.Language.get('permissions'),
+				},
+				{
+					action: () => {
+						openModal({
+							onClose: () =>
+								Liferay.Portlet.refresh(
+									`#p_p_id_${portletId}_`
+								),
+							title: Liferay.Language.get(
+								'configuration-templates'
+							),
+							url: `http://localhost:8080/a984fb2a-9d99-a4e0-b534-c61e4e9f6fa9?p_p_id=com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet&p_p_lifecycle=0&p_p_state=pop_up&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_mvcPath=%2Fedit_configuration_templates.jsp&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_portletResource=${portletId}&_com_liferay_portlet_configuration_web_portlet_PortletConfigurationPortlet_portletConfiguration=true`,
+						});
+					},
+					label: Liferay.Language.get('configuration-templates'),
+				}
+			);
 		}
 
 		return items;
