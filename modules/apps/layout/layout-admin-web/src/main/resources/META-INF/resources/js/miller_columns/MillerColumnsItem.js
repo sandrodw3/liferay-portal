@@ -15,12 +15,13 @@ import {PageTemplateModal} from '@liferay/layout-js-components-web';
 import classNames from 'classnames';
 import {fetch, navigate, sub} from 'frontend-js-web';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useDrag, useDrop} from 'react-dnd';
+import {useDrag, useDragLayer, useDrop} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 
 import ACTIONS from '../actions';
 import {ACCEPTING_TYPES} from './constants/acceptingTypes';
 import {DROP_POSITIONS} from './constants/dropPositions';
+import {useKeyboardNavigation} from './hooks/useKeyboardNavigation';
 import {isValidMovement} from './utils/isValidMovement';
 
 const ITEM_HOVER_BORDER_LIMIT = 20;
@@ -254,6 +255,8 @@ const MillerColumnsItem = ({
 		[items, onItemDrop]
 	);
 
+	const isDragging = useDragLayer((monitor) => monitor.isDragging());
+
 	const [{isDragging: isDragSource}, drag, previewRef] = useDrag({
 		collect: (monitor) => ({
 			isDragging: !!monitor.isDragging(),
@@ -317,6 +320,15 @@ const MillerColumnsItem = ({
 			setDropPosition(dropPosition);
 		},
 	});
+
+	const {isTarget: isNavigationTarget} = useKeyboardNavigation({
+		element: ref.current,
+		isDragging,
+		item,
+	});
+
+	const tabIndex =
+		isNavigationTarget || !Liferay.FeatureFlags['LPD-35220'] ? 0 : -1;
 
 	useEffect(() => {
 		drag(drop(ref));
@@ -383,6 +395,7 @@ const MillerColumnsItem = ({
 					}
 				}}
 				role="button"
+				tabIndex={tabIndex}
 			>
 				<span className="c-inner sr-only">{title}</span>
 			</a>
@@ -394,6 +407,7 @@ const MillerColumnsItem = ({
 							title,
 						])}
 						displayType="unstyled"
+						tabIndex={tabIndex}
 						title={sub(Liferay.Language.get('move-x'), [title])}
 					>
 						<ClayIcon symbol="drag" />
@@ -411,6 +425,7 @@ const MillerColumnsItem = ({
 						className="c-mb-0"
 						defaultChecked={checked}
 						name={`${namespace}rowIds`}
+						tabIndex={tabIndex}
 						value={itemId}
 					/>
 				</ClayLayout.ContentCol>
@@ -450,6 +465,7 @@ const MillerColumnsItem = ({
 									!Liferay.FeatureFlags['LPD-35220'],
 							})}
 							href={viewUrl}
+							tabIndex={tabIndex}
 							target={target}
 						>
 							{title}
@@ -525,6 +541,7 @@ const MillerColumnsItem = ({
 								displayType="secondary"
 								size="sm"
 								symbol="plus"
+								tabIndex={tabIndex}
 								title={Liferay.Language.get('add-child-page')}
 							/>
 						}
@@ -584,6 +601,7 @@ const MillerColumnsItem = ({
 								onClick={loadDropdownActions}
 								size="sm"
 								symbol="ellipsis-v"
+								tabIndex={tabIndex}
 								title={Liferay.Language.get(
 									'open-page-options-menu'
 								)}
