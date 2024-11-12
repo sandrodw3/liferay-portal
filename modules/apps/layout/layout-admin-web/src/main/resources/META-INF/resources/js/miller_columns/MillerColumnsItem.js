@@ -21,6 +21,7 @@ import {getEmptyImage} from 'react-dnd-html5-backend';
 import ACTIONS from '../actions';
 import {ACCEPTING_TYPES} from './constants/acceptingTypes';
 import {DROP_POSITIONS} from './constants/dropPositions';
+import {useKeyboardMovement} from './hooks/useKeyboardMovement';
 import {useKeyboardNavigation} from './hooks/useKeyboardNavigation';
 import {isValidMovement} from './utils/isValidMovement';
 
@@ -258,6 +259,7 @@ const MillerColumnsItem = ({
 	const isDragging = useDragLayer((monitor) => monitor.isDragging());
 
 	const [{isDragging: isDragSource}, drag, previewRef] = useDrag({
+		canDrag: () => !isKeyboardMovementEnabled,
 		collect: (monitor) => ({
 			isDragging: !!monitor.isDragging(),
 		}),
@@ -321,6 +323,19 @@ const MillerColumnsItem = ({
 		},
 	});
 
+	const {
+		enableMovement,
+		isEnabled: isKeyboardMovementEnabled,
+		isSource: isKeyboardMovementSource,
+		isTarget: isKeyboardMovementTarget,
+		position: keyboardMovementPosition,
+	} = useKeyboardMovement({
+		isPrivateLayoutsEnabled,
+		item,
+		items,
+		onMove,
+	});
+
 	const {isTarget: isNavigationTarget} = useKeyboardNavigation({
 		element: ref.current,
 		isDragging,
@@ -329,6 +344,10 @@ const MillerColumnsItem = ({
 
 	const tabIndex =
 		isNavigationTarget || !Liferay.FeatureFlags['LPD-35220'] ? 0 : -1;
+
+	const targetPosition = dropPosition || keyboardMovementPosition;
+	const isSource = isDragSource || isKeyboardMovementSource;
+	const isTarget = isOver || isKeyboardMovementTarget;
 
 	useEffect(() => {
 		drag(drop(ref));
@@ -341,23 +360,24 @@ const MillerColumnsItem = ({
 	useEffect(() => {
 		if (
 			!active &&
-			dropPosition === DROP_POSITIONS.middle &&
+			isTarget &&
+			targetPosition === DROP_POSITIONS.middle &&
 			!timeoutRef.current
 		) {
 			timeoutRef.current = setTimeout(() => {
-				if (isOver) {
+				if (isTarget) {
 					onItemStayHover(itemId);
 				}
 			}, ITEM_HOVER_TIMEOUT);
 		}
 		else if (
-			!isOver ||
-			(dropPosition !== DROP_POSITIONS.middle && timeoutRef.current)
+			!isTarget ||
+			(targetPosition !== DROP_POSITIONS.middle && timeoutRef.current)
 		) {
 			clearTimeout(timeoutRef.current);
 			timeoutRef.current = null;
 		}
-	}, [active, dropPosition, isOver, itemId, onItemStayHover]);
+	}, [active, isTarget, itemId, onItemStayHover, targetPosition]);
 
 	const warningMessage = isLayoutSetPrototype
 		? Liferay.Language.get(
@@ -370,10 +390,12 @@ const MillerColumnsItem = ({
 	return (
 		<ClayLayout.ContentRow
 			className={classNames('list-group-item-flex miller-columns-item', {
-				'dragging': isDragSource,
-				'drop-bottom': isOver && dropPosition === DROP_POSITIONS.bottom,
-				'drop-middle': isOver && dropPosition === DROP_POSITIONS.middle,
-				'drop-top': isOver && dropPosition === DROP_POSITIONS.top,
+				'dragging': isSource,
+				'drop-bottom':
+					isTarget && targetPosition === DROP_POSITIONS.bottom,
+				'drop-middle':
+					isTarget && targetPosition === DROP_POSITIONS.middle,
+				'drop-top': isTarget && targetPosition === DROP_POSITIONS.top,
 				'miller-columns-item--active': active,
 			})}
 			containerElement="li"
@@ -407,6 +429,20 @@ const MillerColumnsItem = ({
 							title,
 						])}
 						displayType="unstyled"
+						onClick={(event) => {
+							if (
+								Liferay.FeatureFlags['LPD-35220'] &&
+								event.detail === 0
+							) {
+								const sources = checked
+									? Array.from(items.values()).filter(
+											(item) => item.checked
+										)
+									: [item];
+
+								enableMovement(sources);
+							}
+						}}
 						tabIndex={tabIndex}
 						title={sub(Liferay.Language.get('move-x'), [title])}
 					>
