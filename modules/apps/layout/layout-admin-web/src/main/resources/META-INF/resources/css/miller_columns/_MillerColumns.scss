@@ -85,7 +85,7 @@
 		}
 	}
 
-	&:not(.dragging) .miller-columns-item-mask {
+	& .miller-columns-item-mask {
 		height: 100%;
 		left: 0;
 		position: absolute;
@@ -96,8 +96,15 @@
 		z-index: 1;
 
 		&:focus {
-			box-shadow: inset 0 0 0 0.125rem $primary-l1;
+			box-shadow: none;
 			outline: 0;
+		}
+	}
+
+	&:not(.dragging):not(.drop-bottom):not(.drop-middle):not(.drop-top)
+		.miller-columns-item-mask {
+		&:focus {
+			box-shadow: inset 0 0 0 0.125rem $primary-l1;
 		}
 	}
 
