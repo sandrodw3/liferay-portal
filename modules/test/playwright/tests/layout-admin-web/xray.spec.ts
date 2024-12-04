@@ -24,120 +24,138 @@ const test = mergeTests(
 	pagesAdminPagesTest
 );
 
-test('First example test for XRay', async ({
-	apiHelpers,
-	page,
-	pagesAdminPage,
-	site,
-}) => {
+test(
+	'First example test for XRay',
+	{
+		annotation: {
+			description: 'LPD-20461',
+			type: 'test_key',
+		},
+	},
+	async ({apiHelpers, page, pagesAdminPage, site}) => {
 
-	// Create a page with only one permission
+		// Create a page with only one permission
 
-	const pageName = getRandomString();
+		const pageName = getRandomString();
 
-	await apiHelpers.headlessDelivery.createSitePage({
-		pagePermissions: [
-			{
-				actionKeys: ['VIEW'],
-				roleKey: 'Owner',
-			},
-		],
-		siteId: site.id,
-		title: pageName,
-	});
+		await apiHelpers.headlessDelivery.createSitePage({
+			pagePermissions: [
+				{
+					actionKeys: ['VIEW'],
+					roleKey: 'Owner',
+				},
+			],
+			siteId: site.id,
+			title: pageName,
+		});
 
-	// Go to admin page and check if the Restricted Page label is in the Miller Columns item
+		// Go to admin page and check if the Restricted Page label is in the Miller Columns item
 
-	await pagesAdminPage.goto(site.friendlyUrlPath);
+		await pagesAdminPage.goto(site.friendlyUrlPath);
 
-	await expect(
-		page
-			.locator('.miller-columns-item')
-			.getByLabel(`${pageName}. Restricted Page`)
-	).toBeVisible();
-});
+		await expect(
+			page
+				.locator('.miller-columns-item')
+				.getByLabel(`${pageName}. Restricted Page`)
+		).toBeVisible();
+	}
+);
 
-test('Second example test for XRay', async ({
-	apiHelpers,
-	page,
-	pagesAdminPage,
-	site,
-}) => {
+test(
+	'Second example test for XRay',
+	{
+		annotation: {
+			description: 'LPD-20463',
+			type: 'test_key',
+		},
+	},
+	async ({apiHelpers, page, pagesAdminPage, site}) => {
 
-	// Create parent page
+		// Create parent page
 
-	const parentPageName = getRandomString();
+		const parentPageName = getRandomString();
 
-	await apiHelpers.jsonWebServicesLayout.addLayout({
-		groupId: site.id,
-		title: parentPageName,
-	});
+		await apiHelpers.jsonWebServicesLayout.addLayout({
+			groupId: site.id,
+			title: parentPageName,
+		});
 
-	// Create child page and check it actually appears as child
+		// Create child page and check it actually appears as child
 
-	const childPageName = getRandomString();
+		const childPageName = getRandomString();
 
-	await pagesAdminPage.goto(site.friendlyUrlPath);
+		await pagesAdminPage.goto(site.friendlyUrlPath);
 
-	await pagesAdminPage.createNewPage({
-		draft: true,
-		name: childPageName,
-		parent: parentPageName,
-	});
+		await pagesAdminPage.createNewPage({
+			draft: true,
+			name: childPageName,
+			parent: parentPageName,
+		});
 
-	await pagesAdminPage.goto(site.friendlyUrlPath);
+		await pagesAdminPage.goto(site.friendlyUrlPath);
 
-	await page.getByRole('button', {name: parentPageName}).click();
+		await page.getByRole('button', {name: parentPageName}).click();
 
-	await expect(page.getByRole('link', {name: childPageName})).toBeVisible();
+		await expect(
+			page.getByRole('link', {name: childPageName})
+		).toBeVisible();
 
-	// Check Draft label is shown and we can preview the draft
+		// Check Draft label is shown and we can preview the draft
 
-	await expect(
-		page
-			.locator('li', {has: page.getByText(childPageName)})
-			.getByText('Draft')
-	).toBeVisible();
+		await expect(
+			page
+				.locator('li', {has: page.getByText(childPageName)})
+				.getByText('Draft')
+		).toBeVisible();
 
-	await clickAndExpectToBeVisible({
-		target: page.getByRole('menuitem', {
-			name: 'Preview Draft',
-		}),
-		trigger: page
-			.locator('li', {has: page.getByText(childPageName)})
-			.getByRole('button', {name: 'Open Page Options Menu'}),
-	});
+		await clickAndExpectToBeVisible({
+			target: page.getByRole('menuitem', {
+				name: 'Preview Draft',
+			}),
+			trigger: page
+				.locator('li', {has: page.getByText(childPageName)})
+				.getByRole('button', {name: 'Open Page Options Menu'}),
+		});
 
-	// Delete child page
+		// Delete child page
 
-	await pagesAdminPage.deletePage(childPageName);
+		await pagesAdminPage.deletePage(childPageName);
 
-	await expect(
-		page.getByRole('link', {name: childPageName})
-	).not.toBeVisible();
-});
+		await expect(
+			page.getByRole('link', {name: childPageName})
+		).not.toBeVisible();
+	}
+);
 
-test('Third example test for XRay', async ({
-	apiHelpers,
-	page,
-	pagesAdminPage,
-	site,
-}) => {
+test(
+	'Third example test for XRay',
+	{
+		annotation: {
+			description: 'LPD-20465',
+			type: 'test_key',
+		},
+		tag: '@LPS-178476',
+	},
+	async ({apiHelpers, page, pagesAdminPage, site}) => {
 
-	// Add listener with expect so it fails when a browser dialog is shown
+		// Add listener with expect so it fails when a browser dialog is shown
 
-	page.on('dialog', async (dialog) => {
-		dialog.accept();
+		page.on('dialog', async (dialog) => {
+			dialog.accept();
 
-		expect(dialog.message(), 'This alert should not be shown').toBeNull();
-	});
+			expect(
+				dialog.message(),
+				'This alert should not be shown'
+			).toBeNull();
+		});
 
-	// Create page and go to view mode to check dialog is not shown
+		// Create page and go to view mode to check dialog is not shown
 
-	await apiHelpers.jsonWebServicesLayout.addLayout({
-		groupId: site.id,
-		title: '<script>alert(123);</script>',
-	});
+		await apiHelpers.jsonWebServicesLayout.addLayout({
+			groupId: site.id,
+			title: '<script>alert(123);</script>',
+		});
 
-	await pagesAdminPage.goto(site.friendlyUrlPath);
-});
+		await pagesAdminPage.goto(site.friendlyUrlPath);
+	}
+);
