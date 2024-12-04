@@ -1,0 +1,69 @@
+<testsuites id="" name="" tests="3" failures="1" skipped="0" errors="0" time="35.544577999997884">
+<testsuite name="layout-admin-web/xray.spec.ts" timestamp="2024-11-27T15:23:07.918Z" hostname="layout-admin-web" tests="3" failures="1" skipped="0" time="33.62" errors="0">
+<testcase name="First example test for XRay" classname="layout-admin-web/xray.spec.ts" time="12.496">
+<properties>
+<property name="test_key" value="LPD-20461">
+</property>
+</properties>
+</testcase>
+<testcase name="Second example test for XRay" classname="layout-admin-web/xray.spec.ts" time="9.429">
+<properties>
+<property name="test_key" value="LPD-20463">
+</property>
+</properties>
+<failure message="xray.spec.ts:64:1 Second example test for XRay" type="FAILURE">
+<![CDATA[  [layout-admin-web] › layout-admin-web/xray.spec.ts:64:1 › Second example test for XRay ───────────
+
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: '9672247c-6c29-468b-8c31-3fce50410d29' }) resolved to 2 elements:
+        1) <a tabindex="0" role="button" class="miller-columns-item-mask" href="http://localhost:8080/group/6ca6100f-5f15-4202-b6b0-c7409a7dee0f/~/control_panel/manage?p_p_id=com_liferay_layout_admin_web_portlet_GroupPagesPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_com_liferay_layout_admin_web_portlet_GroupPagesPortlet_tabs1=pages&_com_liferay_layout_admin_web_portlet_GroupPagesPortlet_displayStyle=miller-columns&_com_liferay_layout_admin_web_portlet_GroupPagesPortlet_privateLayout=false&p_r_…>…</a> aka getByRole('button', { name: '9672247c-6c29-468b-8c31-3fce50410d29', exact: true })
+        2) <button tabindex="0" type="button" class="btn btn-unstyled" title="Move 9672247c-6c29-468b-8c31-3fce50410d29" aria-label="Move 9672247c-6c29-468b-8c31-3fce50410d29">…</button> aka getByLabel('Move 9672247c-6c29-468b-8c31-')
+
+    Call log:
+      - waiting for getByRole('button', { name: '9672247c-6c29-468b-8c31-3fce50410d29' })
+
+
+       95 | 		await pagesAdminPage.goto(site.friendlyUrlPath);
+       96 |
+    >  97 | 		await page.getByRole('button', {name: parentPageName}).click();
+          | 		                                                       ^
+       98 |
+       99 | 		await expect(
+      100 | 			page.getByRole('link', {name: childPageName})
+
+        at /home/sandro/Projects/liferay/liferay-portal/liferay-portal/modules/test/playwright/tests/layout-admin-web/xray.spec.ts:97:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/xray-Second-example-test-for-XRay-layout-admin-web/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/xray-Second-example-test-for-XRay-layout-admin-web/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/xray-Second-example-test-for-XRay-layout-admin-web/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/xray-Second-example-test-for-XRay-layout-admin-web/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/xray-Second-example-test-for-XRay-layout-admin-web/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/xray-Second-example-test-for-XRay-layout-admin-web/test-failed-2.png]]
+
+[[ATTACHMENT|../test-results/xray-Second-example-test-for-XRay-layout-admin-web/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Third example test for XRay" classname="layout-admin-web/xray.spec.ts" time="11.695">
+<properties>
+<property name="test_key" value="LPD-20465">
+</property>
+</properties>
+</testcase>
+</testsuite>
+</testsuites>
