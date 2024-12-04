@@ -245,6 +245,13 @@ export default defineConfig({
 				outputFile: 'test-results/TEST-playwright.xml',
 			},
 		],
+		[
+			'@xray-app/playwright-junit-reporter',
+			{
+				embedAnnotationsAsProperties: true,
+				outputFile: 'test-results/playwright-xray-result.xml',
+			},
+		],
 	],
 	retries: process.env.CI ? 1 : 0,
 	testDir: './tests',
