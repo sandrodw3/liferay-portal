@@ -9,7 +9,7 @@ import {
 	ObjectFolderApi,
 	ObjectRelationshipApi,
 } from '@liferay/object-admin-rest-client-js';
-import {Page} from '@playwright/test';
+import {APIResponse, Page, expect} from '@playwright/test';
 
 import {liferayConfig} from '../liferay.config';
 import {ApiBuilderHelper} from './ApiBuilderHelper';
@@ -267,7 +267,22 @@ export class ApiHelpers {
 	}
 
 	async post<T>(url: string, options: RequestOptions<T> = {}) {
-		const response = await this.postResponse(url, options);
+		let response: APIResponse;
+
+		await expect(async () => {
+			response = await this.postResponse(url, options);
+
+			if (response.status() === 204) {
+				return true;
+			}
+
+			await response.json();
+
+			return true;
+		}).toPass({
+			intervals: [1000],
+			timeout: 10000,
+		});
 
 		if (response.status() === 204) {
 			return;
