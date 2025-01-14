@@ -13,9 +13,7 @@ import onExit from './onExit';
 const TMP_DIR = `tmp/${process.pid}`;
 
 onExit(() => {
-	if (fs.existsSync(TMP_DIR)) {
-		fs.rmdirSync(TMP_DIR, {recursive: true});
-	}
+	deleteTempFile();
 });
 
 export class TempFileMissingError extends Error {
@@ -39,6 +37,12 @@ export default function createTempFile(
 	fs.writeFileSync(filePath, content, 'utf-8');
 
 	return filePath;
+}
+
+export function deleteTempFile() {
+	if (fs.existsSync(TMP_DIR)) {
+		fs.rmdirSync(TMP_DIR, {recursive: true});
+	}
 }
 
 export function readTempFile(name: string): string {

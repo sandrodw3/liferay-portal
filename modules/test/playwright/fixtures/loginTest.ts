@@ -8,6 +8,7 @@ import {Cookie, test} from '@playwright/test';
 import {liferayConfig} from '../liferay.config';
 import createTempFile, {
 	TempFileMissingError,
+	deleteTempFile,
 	readTempFile,
 } from '../utils/createTempFile';
 import performLogin, {LoginScreenName} from '../utils/performLogin';
@@ -21,6 +22,12 @@ export interface Login {
 		screenName: LoginScreenName;
 		sessionId: string;
 	};
+}
+
+class InvalidCookiesError extends Error {
+	constructor() {
+		super('Login could not be done due to invalid cookies');
+	}
 }
 
 /**
@@ -57,12 +64,32 @@ function loginTest(options: LoginOptions = {}) {
 
 					cookies = json.cookies;
 
-					page.context().addCookies(cookies);
+					await page.context().addCookies(cookies);
+
+					await page.goto('/');
 
 					await page.goto(liferayConfig.environment.baseUrl);
+
+					await page
+						.locator('.user-personal-bar')
+						.getByPlaceholder('Search')
+						.waitFor();
+
+					if (
+						!(await page
+							.locator('.personal-menu-dropdown')
+							.isVisible())
+					) {
+						deleteTempFile();
+
+						throw new InvalidCookiesError();
+					}
 				}
 				catch (error) {
-					if (!(error instanceof TempFileMissingError)) {
+					if (
+						!(error instanceof TempFileMissingError) &&
+						!(error instanceof InvalidCookiesError)
+					) {
 						throw error;
 					}
 
