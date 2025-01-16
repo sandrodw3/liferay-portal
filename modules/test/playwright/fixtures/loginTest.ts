@@ -57,7 +57,7 @@ function loginTest(options: LoginOptions = {}) {
 
 					cookies = json.cookies;
 
-					page.context().addCookies(cookies);
+					await page.context().addCookies(cookies);
 
 					await page.goto(liferayConfig.environment.baseUrl);
 				}
