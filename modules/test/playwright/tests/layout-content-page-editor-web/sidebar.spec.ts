@@ -45,10 +45,10 @@ const test = mergeTests(
 	fragmentsPagesTest,
 	isolatedSiteTest,
 	journalPagesTest,
-	loginTest(),
 	pageEditorPagesTest,
 	pageManagementSiteTest,
-	pageViewModePagesTest
+	pageViewModePagesTest,
+	loginTest()
 );
 
 const PANELS: SidebarTab[] = [

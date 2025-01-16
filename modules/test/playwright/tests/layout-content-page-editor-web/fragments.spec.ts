@@ -43,6 +43,7 @@ import getFragmentDefinition from './utils/getFragmentDefinition';
 import getPageDefinition from './utils/getPageDefinition';
 
 const test = mergeTests(
+	loginTest(),
 	apiHelpersTest,
 	displayPageTemplatesPagesTest,
 	documentLibraryPagesTest,
@@ -53,7 +54,6 @@ const test = mergeTests(
 	fragmentsPagesTest,
 	isolatedSiteTest,
 	journalPagesTest,
-	loginTest(),
 	masterPagesPagesTest,
 	objectPagesTest,
 	pageEditorPagesTest,

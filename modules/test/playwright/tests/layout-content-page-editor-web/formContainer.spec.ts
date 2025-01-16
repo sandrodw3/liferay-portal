@@ -47,11 +47,11 @@ const test = mergeTests(
 		'LPD-37927': {enabled: true},
 		'LPS-178052': {enabled: true},
 	}),
-	loginTest(),
 	masterPagesPagesTest,
 	objectPagesTest,
 	pageEditorPagesTest,
-	pageManagementSiteTest
+	pageManagementSiteTest,
+	loginTest()
 );
 
 test.describe('Form Configuration', () => {

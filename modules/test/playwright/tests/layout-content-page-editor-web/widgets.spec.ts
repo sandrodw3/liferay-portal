@@ -23,6 +23,7 @@ import getPageDefinition from './utils/getPageDefinition';
 import getWidgetDefinition from './utils/getWidgetDefinition';
 
 const test = mergeTests(
+	loginTest(),
 	apiHelpersTest,
 	featureFlagsTest({
 		'LPD-40533': {enabled: true},
@@ -30,7 +31,6 @@ const test = mergeTests(
 		'LPS-178052': {enabled: true},
 	}),
 	isolatedSiteTest,
-	loginTest(),
 	masterPagesPagesTest,
 	pageEditorPagesTest,
 	pageManagementSiteTest
