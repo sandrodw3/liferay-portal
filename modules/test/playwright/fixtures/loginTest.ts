@@ -47,6 +47,8 @@ function loginTest(options: LoginOptions = {}) {
 	const fixtureImpl = test.extend<Login>({
 		login: [
 			async ({page}, use) => {
+				await page.goto('/');
+
 				const screenName = options.screenName || 'test';
 				const tempFile = `loginTest-${screenName}.json`;
 
