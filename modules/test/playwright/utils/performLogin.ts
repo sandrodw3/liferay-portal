@@ -82,7 +82,9 @@ async function performLogin(
 		timeout: 30 * 1000,
 	});
 
-	return await page.context().cookies();
+	return (await page.context().cookies()).filter(
+		(cookie) => cookie.name === 'JSESSIONID'
+	);
 }
 
 export async function performLogout(page: Page) {
