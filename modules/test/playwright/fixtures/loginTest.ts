@@ -3,14 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {Cookie, test} from '@playwright/test';
+import {test} from '@playwright/test';
 
 import {liferayConfig} from '../liferay.config';
-import createTempFile, {
-	TempFileMissingError,
-	readTempFile,
-} from '../utils/createTempFile';
-import performLogin, {LoginScreenName} from '../utils/performLogin';
+import {LoginScreenName, userData} from '../utils/performLogin';
 
 export interface LoginOptions {
 	screenName?: LoginScreenName;
@@ -48,36 +44,54 @@ function loginTest(options: LoginOptions = {}) {
 		login: [
 			async ({page}, use) => {
 				const screenName = options.screenName || 'test';
-				const tempFile = `loginTest-${screenName}.json`;
+				const domain = '@liferay.com';
 
-				let cookies: Cookie[];
+				const {password} = userData[screenName];
 
-				try {
-					const json = JSON.parse(readTempFile(tempFile));
+				const params = {
+					login: `${screenName}${domain}`,
+					password,
+					rememberMe: 'true',
+				};
 
-					cookies = json.cookies;
+				// Login via API
 
-					await page.goto('/');
+				const url = `${liferayConfig.environment.baseUrl}/c/portal/login`;
 
-					await page.context().addCookies(cookies);
+				const response = await fetch(url, {
+					body: new URLSearchParams(params).toString(),
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					method: 'POST',
+				});
 
-					await page.goto(liferayConfig.environment.baseUrl);
-				}
-				catch (error) {
-					if (!(error instanceof TempFileMissingError)) {
-						throw error;
-					}
+				// Extract JSESSIONID cookie and inject it in page context
 
-					cookies = await performLogin(page, screenName);
+				const [, JSESSIONID] = response.headers
+					.get('set-cookie')
+					.match(/JSESSIONID=([^;]+)/);
 
-					createTempFile(tempFile, JSON.stringify({cookies}));
-				}
+				const cookie = {
+					domain: 'localhost',
+					expires: -1,
+					httpOnly: true,
+					name: 'JSESSIONID',
+					path: '/',
+					sameSite: 'Lax' as const,
+					secure: false,
+					value: JSESSIONID,
+				};
+
+				await page.context().addCookies([cookie]);
+
+				await page.goto('/');
+
+				await page.goto(liferayConfig.environment.baseUrl);
 
 				await use({
 					screenName,
-					sessionId: cookies.find(
-						(cookie) => cookie.name === 'JSESSIONID'
-					).value,
+					sessionId: JSESSIONID,
 				});
 			},
 			{auto: true},
