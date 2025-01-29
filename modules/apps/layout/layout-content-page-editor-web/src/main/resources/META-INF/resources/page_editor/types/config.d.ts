@@ -96,6 +96,7 @@ export interface Config {
 	defaultStyleBookEntryImagePreviewURL: string;
 	defaultStyleBookEntryName: string;
 	deleteFragmentEntryLinkCommentURL: string;
+	deleteFormStepURL: string;
 	deleteRuleURL: string;
 	deleteSegmentsExperienceURL: string;
 	discardDraftURL: string;

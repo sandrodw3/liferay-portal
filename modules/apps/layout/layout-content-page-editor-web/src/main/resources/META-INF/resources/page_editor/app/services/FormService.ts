@@ -78,7 +78,7 @@ export default {
 		return draftServiceFetch<{
 			layoutData: LayoutData;
 		}>(
-			config.markItemForDeletionURL,
+			config.deleteFormStepURL,
 			{
 				body: {
 					itemId,
