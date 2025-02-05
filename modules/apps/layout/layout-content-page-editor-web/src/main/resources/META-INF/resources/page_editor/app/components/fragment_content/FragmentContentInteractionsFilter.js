@@ -238,6 +238,8 @@ function FragmentContentInteractionsFilter({
 	}, [activationOrigin, activeItemType, editables, isActive]);
 
 	const hoverEditable = (event) => {
+		event.stopPropagation();
+
 		const editableElement = getEditableElement(event.target);
 
 		const editable = editables.find(
@@ -248,8 +250,6 @@ function FragmentContentInteractionsFilter({
 			editable?.itemId === fromControlsId(editableProcessorUniqueId);
 
 		if (editable && !isBeingEdited) {
-			event.stopPropagation();
-
 			hoverItem(editable.itemId, {itemType: ITEM_TYPES.editable});
 		}
 	};
