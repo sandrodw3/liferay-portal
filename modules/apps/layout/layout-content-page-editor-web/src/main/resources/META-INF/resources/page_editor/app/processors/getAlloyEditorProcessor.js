@@ -77,6 +77,8 @@ export default function getAlloyEditorProcessor(
 			editorWrapper.setAttribute('id', editorName);
 			editorWrapper.setAttribute('name', editorName);
 
+			editorWrapper.classList.add('editor-loading');
+
 			element.addEventListener('keyup', keyupHandler);
 
 			_editor = AlloyEditor.editable(editorWrapper, {
@@ -192,6 +194,8 @@ export default function getAlloyEditorProcessor(
 							},
 						},
 					});
+
+					editorWrapper.classList.remove('editor-loading');
 
 					nativeEditor.focus();
 

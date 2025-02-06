@@ -252,6 +252,10 @@ html#{$cadmin-selector} {
 					}
 				}
 			}
+
+			& .editor-loading {
+				pointer-events: none;
+			}
 		}
 
 		&__row
