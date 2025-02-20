@@ -31,7 +31,7 @@ async function publishStructure({id}: {id: State['id']}) {
 		return;
 	}
 
-	return await API.postObjectDefinitionPublish(id);
+	return await API.postObjectDefinitionPublishWithSave(id);
 }
 
 async function updateStructure({
