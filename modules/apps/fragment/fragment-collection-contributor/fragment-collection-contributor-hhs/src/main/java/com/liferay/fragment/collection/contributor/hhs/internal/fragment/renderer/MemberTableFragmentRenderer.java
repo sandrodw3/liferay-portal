@@ -17,6 +17,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.taglib.servlet.PageContextFactoryUtil;
 
 import java.io.PrintWriter;
@@ -65,6 +66,12 @@ public class MemberTableFragmentRenderer implements FragmentRenderer {
 			componentTag.setPageContext(
 				PageContextFactoryUtil.create(
 					httpServletRequest, httpServletResponse));
+			componentTag.setProps(
+				HashMapBuilder.<String, Object>put(
+					"houseERC",
+					_getExternalReferenceCode(
+						fragmentRendererContext.getContextInfoItemReference())
+				).build());
 
 			componentTag.setServletContext(_servletContext);
 
@@ -79,6 +86,43 @@ public class MemberTableFragmentRenderer implements FragmentRenderer {
 				_log.debug(exception);
 			}
 		}
+	}
+
+	private String _getExternalReferenceCode(
+		InfoItemReference infoItemReference) {
+
+		if (infoItemReference == null) {
+			return StringPool.BLANK;
+		}
+
+		if (infoItemReference.getInfoItemIdentifier() instanceof
+				ERCInfoItemIdentifier) {
+
+			ERCInfoItemIdentifier ercInfoItemIdentifier =
+				(ERCInfoItemIdentifier)
+					infoItemReference.getInfoItemIdentifier();
+
+			return ercInfoItemIdentifier.getExternalReferenceCode();
+		}
+
+		if (!(infoItemReference.getInfoItemIdentifier() instanceof
+				ClassPKInfoItemIdentifier)) {
+
+			return StringPool.BLANK;
+		}
+
+		ClassPKInfoItemIdentifier classPKInfoItemIdentifier =
+			(ClassPKInfoItemIdentifier)
+				infoItemReference.getInfoItemIdentifier();
+
+		ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
+			classPKInfoItemIdentifier.getClassPK());
+
+		if (objectEntry == null) {
+			return StringPool.BLANK;
+		}
+
+		return objectEntry.getExternalReferenceCode();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
