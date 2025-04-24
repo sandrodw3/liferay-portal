@@ -9,6 +9,7 @@ import com.liferay.fragment.constants.FragmentConstants;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererContext;
 import com.liferay.frontend.taglib.react.servlet.taglib.ComponentTag;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -44,6 +45,13 @@ public class MemberSelectorFragmentRenderer implements FragmentRenderer {
 	@Override
 	public int getType() {
 		return FragmentConstants.TYPE_INPUT;
+	}
+
+	@Override
+	public String getTypeOptions() {
+		return JSONUtil.put(
+			"fieldTypes", JSONUtil.putAll("text")
+		).toString();
 	}
 
 	@Override
