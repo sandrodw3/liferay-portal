@@ -11,6 +11,12 @@ import com.liferay.fragment.input.template.parser.InputTemplateNode;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererContext;
 import com.liferay.frontend.taglib.react.servlet.taglib.ComponentTag;
+import com.liferay.info.item.ClassPKInfoItemIdentifier;
+import com.liferay.info.item.ERCInfoItemIdentifier;
+import com.liferay.info.item.InfoItemReference;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
@@ -78,6 +84,10 @@ public class MemberSelectorFragmentRenderer implements FragmentRenderer {
 					httpServletRequest, httpServletResponse));
 			componentTag.setProps(
 				HashMapBuilder.<String, Object>put(
+					"houseERC",
+					_getExternalReferenceCode(
+						fragmentRendererContext.getContextInfoItemReference())
+				).put(
 					"input",
 					() -> {
 						InputTemplateNode inputTemplateNode =
@@ -112,6 +122,43 @@ public class MemberSelectorFragmentRenderer implements FragmentRenderer {
 		}
 	}
 
+	private String _getExternalReferenceCode(
+		InfoItemReference infoItemReference) {
+
+		if (infoItemReference == null) {
+			return StringPool.BLANK;
+		}
+
+		if (infoItemReference.getInfoItemIdentifier() instanceof
+				ERCInfoItemIdentifier) {
+
+			ERCInfoItemIdentifier ercInfoItemIdentifier =
+				(ERCInfoItemIdentifier)
+					infoItemReference.getInfoItemIdentifier();
+
+			return ercInfoItemIdentifier.getExternalReferenceCode();
+		}
+
+		if (!(infoItemReference.getInfoItemIdentifier() instanceof
+				ClassPKInfoItemIdentifier)) {
+
+			return StringPool.BLANK;
+		}
+
+		ClassPKInfoItemIdentifier classPKInfoItemIdentifier =
+			(ClassPKInfoItemIdentifier)
+				infoItemReference.getInfoItemIdentifier();
+
+		ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
+			classPKInfoItemIdentifier.getClassPK());
+
+		if (objectEntry == null) {
+			return StringPool.BLANK;
+		}
+
+		return objectEntry.getExternalReferenceCode();
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		MemberSelectorFragmentRenderer.class);
 
@@ -121,6 +168,9 @@ public class MemberSelectorFragmentRenderer implements FragmentRenderer {
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
 
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.fragment.collection.contributor.hhs)"
