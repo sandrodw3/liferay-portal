@@ -10,7 +10,7 @@
  */
 
 module.exports = {
-	hash: '92e4b338ff970654eeeb0cd5d4397820d618d1e4395f259db69346b6fce9c936',
+	hash: 'fd9edacd21846f7bd265450d4c38f92a0a59e649e6d1bfe42cc973a61d70cbf4',
 	imports: {
 		'@liferay/accessibility-menu-web': [],
 		'@liferay/accessibility-settings-state-web': [],
@@ -69,6 +69,7 @@ module.exports = {
 		'@liferay/expando-taglib': [],
 		'@liferay/feature-flag-web': [],
 		'@liferay/flags-taglib': [],
+		'@liferay/fragment-collection-contributor-hhs': [],
 		'@liferay/fragment-collection-filter-category': [],
 		'@liferay/fragment-collection-filter-date': [],
 		'@liferay/fragment-collection-filter-keyword': [],
