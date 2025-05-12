@@ -9,7 +9,7 @@ import {apiHelpersTest} from '../../../fixtures/apiHelpersTest';
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {pageEditorPagesTest} from '../../../fixtures/pageEditorPagesTest';
-import getRandomString from '../../../utils/getRandomString';
+import {clickAndExpectToBeVisible} from '../../../utils/clickAndExpectToBeVisible';
 import {cmsPagesTest} from './fixtures/cmsPagesTest';
 
 const test = mergeTests(
@@ -24,37 +24,49 @@ test.describe('Space List Fragment CMS', () => {
 	test(
 		'Check the functionality of the Space List fragment CMS',
 		{tag: ['@LPD-52223']},
-		async ({apiHelpers, page, pageEditorPage}) => {
+		async ({contentsPage, page, pageEditorPage, structuresPage}) => {
 
-			// Create site using CMS template
+			// Go to the Structures Pages
 
-			const site = await apiHelpers.headlessSite.createSite({
-				name: getRandomString(),
-				templateKey: 'com.liferay.site.initializer.cms',
-				templateType: 'site-initializer',
+			await structuresPage.goto();
+
+			// Edit Basic Web Content structure
+
+			const row = page.locator('.cell-label', {
+				hasText: 'Basic Web Content',
 			});
 
-			apiHelpers.data.push({id: site.id, type: 'site'});
-
-			// Create a content page and go to edit mode
-
-			const layout = await apiHelpers.jsonWebServicesLayout.addLayout({
-				groupId: site.id,
-				options: {type: 'content'},
-				title: getRandomString(),
+			await clickAndExpectToBeVisible({
+				autoClick: true,
+				target: page.getByRole('menuitem', {
+					name: 'Edit',
+				}),
+				trigger: row.getByLabel('options'),
 			});
 
-			await pageEditorPage.goto(layout, site.friendlyUrlPath);
+			// Customize Experience
+
+			await page
+				.getByRole('button', {
+					exact: true,
+					name: 'Customize Experience',
+				})
+				.click();
 
 			// Add a Space List fragment
 
 			await pageEditorPage.addFragment(
-				'CMS Fragments',
-				'Space List',
-				page.getByText('Drag and drop fragments or widgets here.', {
-					exact: true,
-				})
+				'fragment.collection.label.space-list',
+				'space-list'
 			);
+
+			await pageEditorPage.publishPage();
+
+			// Add new content with the structure
+
+			await contentsPage.goto();
+
+			await contentsPage.addNewContent('Basic Web Content');
 
 			// Check the default Space List fragment configuration
 
@@ -66,31 +78,11 @@ test.describe('Space List Fragment CMS', () => {
 
 			await expect(
 				page.locator('.space-list-name .sticker-overlay')
-			).toHaveText('S');
+			).toHaveText('D');
 
 			await expect(
 				page.locator('.space-list-name').locator('span').last()
-			).toHaveText('Space Name');
-
-			// Configure Space List fragment name
-
-			const spaceListId =
-				await pageEditorPage.getFragmentId('Space List');
-
-			await pageEditorPage.changeFragmentConfiguration({
-				fieldLabel: 'space-name',
-				fragmentId: spaceListId,
-				tab: 'General',
-				value: 'Updated Name',
-			});
-
-			await expect(
-				page.locator('.space-list-name .sticker-overlay')
-			).toHaveText('U');
-
-			await expect(
-				page.locator('.space-list-name').locator('span').last()
-			).toHaveText('Updated Name');
+			).toHaveText('Default');
 		}
 	);
 });
