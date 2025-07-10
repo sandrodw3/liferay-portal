@@ -18,6 +18,9 @@ public class ObjectFolderConstants {
 	public static final String EXTERNAL_REFERENCE_CODE_FILE_TYPES =
 		"L_CMS_FILE_TYPES";
 
+	public static final String EXTERNAL_REFERENCE_CODE_STRUCTURE_REPEATABLE_GROUPS =
+		"L_CMS_STRUCTURE_REPEATABLE_GROUPS";
+
 	public static final String NAME_DEFAULT = "Default";
 
 }
