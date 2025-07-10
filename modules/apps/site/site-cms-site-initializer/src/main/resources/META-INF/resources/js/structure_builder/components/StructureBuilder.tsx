@@ -10,7 +10,7 @@ import React, {useEffect} from 'react';
 import {Config, initializeConfig} from '../config';
 import CacheContextProvider from '../contexts/CacheContext';
 import StateContextProvider, {useSelector} from '../contexts/StateContext';
-import selectStructureId from '../selectors/selectStructureId';
+import selectStructureERC from '../selectors/selectStructureERC';
 import {ObjectDefinition} from '../types/ObjectDefinition';
 import buildState from '../utils/buildState';
 import Sidebar from './Sidebar';
@@ -65,10 +65,10 @@ export default function StructureBuilder({
 }
 
 function HistoryManager() {
-	const structureId = useSelector(selectStructureId);
+	const structureERC = useSelector(selectStructureERC);
 
 	useEffect(() => {
-		if (!structureId) {
+		if (!structureERC) {
 			return;
 		}
 
@@ -78,10 +78,13 @@ function HistoryManager() {
 			url.searchParams.delete('objectFolderExternalReferenceCode');
 		}
 
-		url.searchParams.set('objectDefinitionId', structureId.toString());
+		url.searchParams.set(
+			'objectDefinitionExternalReferenceCode',
+			structureERC
+		);
 
 		history.replaceState(null, document.head.title, url.href);
-	}, [structureId]);
+	}, [structureERC]);
 
 	return null;
 }

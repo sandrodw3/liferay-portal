@@ -154,10 +154,10 @@ public class StructureBuilderDisplayContext {
 			return _objectDefinition;
 		}
 
-		long objectDefinitionId = ParamUtil.getLong(
-			_httpServletRequest, "objectDefinitionId");
+		String objectDefinitionExternalReferenceCode = ParamUtil.getString(
+			_httpServletRequest, "objectDefinitionExternalReferenceCode");
 
-		if (objectDefinitionId <= 0) {
+		if (Validator.isNull(objectDefinitionExternalReferenceCode)) {
 			return null;
 		}
 
@@ -168,8 +168,9 @@ public class StructureBuilderDisplayContext {
 			_themeDisplay.getUser()
 		).build();
 
-		_objectDefinition = objectDefinitionResource.getObjectDefinition(
-			objectDefinitionId);
+		_objectDefinition =
+			objectDefinitionResource.getObjectDefinitionByExternalReferenceCode(
+				objectDefinitionExternalReferenceCode);
 
 		return _objectDefinition;
 	}
