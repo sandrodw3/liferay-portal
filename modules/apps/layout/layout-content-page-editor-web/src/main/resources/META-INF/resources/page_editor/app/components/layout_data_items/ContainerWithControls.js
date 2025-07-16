@@ -26,6 +26,7 @@ const ContainerWithControls = React.forwardRef(({children, item}, ref) => {
 		selectCanUpdateItemConfiguration
 	);
 	const [hovered, setHovered] = useState(false);
+
 	const selectedViewportSize = useSelector(
 		(state) => state.selectedViewportSize
 	);
