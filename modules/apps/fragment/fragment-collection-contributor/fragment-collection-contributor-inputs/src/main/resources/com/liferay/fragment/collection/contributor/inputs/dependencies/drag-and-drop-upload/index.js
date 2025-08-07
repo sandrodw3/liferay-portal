@@ -277,7 +277,8 @@ else {
 							inputElement.id
 						);
 
-						let previewURL = translationInput?.dataset?.previewURL;
+						const previewURL =
+							translationInput?.dataset?.previewURL;
 
 						const fileName =
 							translationInput?.dataset?.fileName || '';
@@ -286,26 +287,7 @@ else {
 							showPreview(previewURL, fileName);
 						}
 						else {
-							const defaultInput = getTranslationInput({
-								inputId: inputElement.id,
-								inputName: input.name,
-								languageId: defaultLanguageId,
-								localizationInputsContainer:
-									inputElement.parentNode,
-								namespace: fragmentNamespace,
-							});
-
-							previewURL = defaultInput?.dataset?.previewURL;
-
-							if (previewURL) {
-								showPreview(
-									defaultInput?.dataset?.previewURL,
-									defaultInput?.dataset?.fileName
-								);
-							}
-							else {
-								showDropzone(DROP_ZONE_CONTAINER_TYPE.DEFAULT);
-							}
+							showDropzone(DROP_ZONE_CONTAINER_TYPE.DEFAULT);
 						}
 					},
 					onMarkAsTranslated: () => {
