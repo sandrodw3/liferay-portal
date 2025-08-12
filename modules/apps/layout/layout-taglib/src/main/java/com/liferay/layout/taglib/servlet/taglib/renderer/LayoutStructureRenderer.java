@@ -22,6 +22,7 @@ import com.liferay.frontend.taglib.servlet.taglib.ComponentTag;
 import com.liferay.info.constants.InfoDisplayWebKeys;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.type.BooleanInfoFieldType;
+import com.liferay.info.field.type.InfoFieldType;
 import com.liferay.info.field.type.MultiselectInfoFieldType;
 import com.liferay.info.form.InfoForm;
 import com.liferay.info.item.InfoItemDetails;
@@ -92,6 +93,7 @@ import jakarta.servlet.jsp.PageContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1279,6 +1281,8 @@ public class LayoutStructureRenderer {
 					defaultFragmentRendererContext, _httpServletRequest,
 					httpServletResponse);
 
+				Map<String, String> dataAttributes = new HashMap<>();
+
 				if ((infoForm != null) &&
 					Objects.equals(
 						fragmentEntryLink.getType(),
@@ -1298,16 +1302,23 @@ public class LayoutStructureRenderer {
 
 					InfoField<?> infoField = infoForm.getInfoField(fieldName);
 
+					InfoFieldType infoFieldType = infoField.getInfoFieldType();
+
 					if ((infoField != null) &&
-						(infoField.getInfoFieldType() instanceof
-							BooleanInfoFieldType ||
-						 infoField.getInfoFieldType() instanceof
-							 MultiselectInfoFieldType)) {
+						(infoFieldType instanceof BooleanInfoFieldType ||
+						 infoFieldType instanceof MultiselectInfoFieldType)) {
 
 						jspWriter.write("<input name=\"checkboxNames\" ");
 						jspWriter.write("type=\"hidden\" value=\"");
 						jspWriter.write(fieldName);
 						jspWriter.write("\">");
+					}
+
+					dataAttributes.put("field-type", infoFieldType.getName());
+
+					if (infoField.isLocalizable()) {
+						dataAttributes.put(
+							"localizable", Boolean.TRUE.toString());
 					}
 				}
 
@@ -1319,8 +1330,8 @@ public class LayoutStructureRenderer {
 						true)) {
 
 					_write(
-						fragmentEntryLink, fragmentStyledLayoutStructureItem,
-						jspWriter);
+						dataAttributes, fragmentEntryLink,
+						fragmentStyledLayoutStructureItem, jspWriter);
 				}
 				else {
 					jspWriter.write("<div>");
@@ -1552,6 +1563,7 @@ public class LayoutStructureRenderer {
 	}
 
 	private void _write(
+			Map<String, String> dataAttributes,
 			FragmentEntryLink fragmentEntryLink,
 			FragmentStyledLayoutStructureItem fragmentStyledLayoutStructureItem,
 			JspWriter jspWriter)
@@ -1584,12 +1596,19 @@ public class LayoutStructureRenderer {
 
 		jspWriter.write("\" data-layout-structure-item-id=\"");
 		jspWriter.write(fragmentStyledLayoutStructureItem.getItemId());
+		jspWriter.write(StringPool.QUOTE);
+
+		for (Map.Entry<String, String> entry : dataAttributes.entrySet()) {
+			jspWriter.write(" data-" + entry.getKey() + "=\"");
+			jspWriter.write(entry.getValue());
+			jspWriter.write(StringPool.QUOTE);
+		}
 
 		String style = _renderLayoutStructureDisplayContext.getStyle(
 			fragmentStyledLayoutStructureItem);
 
 		if (Validator.isNotNull(style)) {
-			jspWriter.write("\" style=\"");
+			jspWriter.write(" style=\"");
 			jspWriter.write(style);
 		}
 
