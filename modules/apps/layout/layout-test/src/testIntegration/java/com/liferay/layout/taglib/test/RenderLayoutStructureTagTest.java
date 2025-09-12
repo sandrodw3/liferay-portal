@@ -261,6 +261,48 @@ public class RenderLayoutStructureTagTest {
 		ServiceContextThreadLocal.popServiceContext();
 	}
 
+	@Test
+	@TestInfo("LPD-65271")
+	public void testContainsPageEditorWrapperContentDivInEditMode()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addTypeContentLayout(_group);
+
+		MockHttpServletRequest mockHttpServletRequest =
+			_getMockHttpServletRequest(layout);
+
+		mockHttpServletRequest.setParameter("p_l_mode", Constants.EDIT);
+
+		MockHttpServletResponse mockHttpServletResponse = _renderLayout(
+			layout, mockHttpServletRequest);
+
+		String content = mockHttpServletResponse.getContentAsString();
+
+		Assert.assertTrue(
+			content, content.contains("page-editor-wrapper-content"));
+	}
+
+	@Test
+	@TestInfo("LPD-65271")
+	public void testContainsPageEditorWrapperContentDivInViewMode()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addTypeContentLayout(_group);
+
+		MockHttpServletRequest mockHttpServletRequest =
+			_getMockHttpServletRequest(layout);
+
+		mockHttpServletRequest.setParameter("p_l_mode", Constants.VIEW);
+
+		MockHttpServletResponse mockHttpServletResponse = _renderLayout(
+			layout, mockHttpServletRequest);
+
+		String content = mockHttpServletResponse.getContentAsString();
+
+		Assert.assertFalse(
+			content, content.contains("page-editor-wrapper-content"));
+	}
+
 	@FeatureFlag("LPD-21926")
 	@Test
 	@TestInfo({"LPD-50584", "LPD-52416"})
