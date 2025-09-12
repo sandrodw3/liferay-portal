@@ -23,24 +23,7 @@ public abstract class BaseSectionFragmentRenderer implements FragmentRenderer {
 
 	@Override
 	public boolean isSelectable(HttpServletRequest httpServletRequest) {
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
-		if (!FeatureFlagManagerUtil.isEnabled(
-				themeDisplay.getCompanyId(), "LPD-17564")) {
-
-			return false;
-		}
-
-		Group group = groupLocalService.fetchGroup(
-			themeDisplay.getScopeGroupId());
-
-		if ((group == null) || !group.isCMS()) {
-			return false;
-		}
-
-		return true;
+		return false;
 	}
 
 	@Reference
