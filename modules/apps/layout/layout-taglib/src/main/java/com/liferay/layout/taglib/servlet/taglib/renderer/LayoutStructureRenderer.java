@@ -131,8 +131,24 @@ public class LayoutStructureRenderer {
 	}
 
 	public void render() throws Exception {
+		JspWriter jspWriter = _pageContext.getOut();
+
+		if (Objects.equals(
+				_renderLayoutStructureDisplayContext.getLayoutMode(),
+				Constants.EDIT)) {
+
+			jspWriter.write("<div id=\"page-editor-wrapper-content\">");
+		}
+
 		_renderLayoutStructure(
 			_renderLayoutStructureDisplayContext.getMainChildrenItemIds());
+
+		if (Objects.equals(
+				_renderLayoutStructureDisplayContext.getLayoutMode(),
+				Constants.EDIT)) {
+
+			jspWriter.write("</div>");
+		}
 
 		if (_renderActionHandler) {
 			_renderComponent(
