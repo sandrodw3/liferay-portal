@@ -357,7 +357,9 @@ public class FragmentEntryFragmentRenderer implements FragmentRenderer {
 		sb.append(configuration);
 		sb.append("; const fragmentElement = document.querySelector('#");
 		sb.append(fragmentRendererContext.getFragmentElementId());
-		sb.append("'); const fragmentEntryLinkNamespace = '");
+		sb.append("'); const fragmentElementId = '");
+		sb.append(fragmentRendererContext.getFragmentElementId());
+		sb.append("'; const fragmentEntryLinkNamespace = '");
 		sb.append(fragmentEntryLink.getNamespace());
 		sb.append("'; const fragmentNamespace = '");
 		sb.append(fragmentEntryLink.getNamespace());
