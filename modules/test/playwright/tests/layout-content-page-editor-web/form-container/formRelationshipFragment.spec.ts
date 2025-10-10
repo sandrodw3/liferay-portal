@@ -295,7 +295,7 @@ test(
 		await expect(options).toHaveCount(2);
 
 		await expect(options.first()).toContainText('None');
-		await expect(options.nth(1)).toHaveText('Fruit (Fruit)');
+		await expect(options.nth(1)).toHaveText('Fruit');
 
 		await pageEditorPage.mapFormRelationshipFragment(
 			formRelationshipId,
