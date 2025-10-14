@@ -987,11 +987,6 @@ public class FragmentEntryInputTemplateNodeContextHelperImpl
 			infoItemFieldValues.getInfoFieldValue(infoField.getUniqueId());
 
 		if (infoFieldValue == null) {
-			infoFieldValue = infoItemFieldValues.getInfoFieldValue(
-				infoField.getName());
-		}
-
-		if (infoFieldValue == null) {
 			return defaultValue;
 		}
 
