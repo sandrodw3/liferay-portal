@@ -27,7 +27,7 @@ export default function AddLayout({
 		'.add-layout-form'
 	) as HTMLButtonElement;
 
-	addLayoutForm?.classList.remove('d-none');
+	addLayoutForm?.classList.remove('d-nsone');
 
 	const form = document.getElementById(`${namespace}fm`) as HTMLFormElement;
 
