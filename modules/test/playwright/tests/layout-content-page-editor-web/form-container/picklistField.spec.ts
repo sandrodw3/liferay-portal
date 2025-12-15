@@ -413,7 +413,9 @@ test(
 
 		await expect(page.getByText('Lemon Dimensions')).toBeVisible();
 
-		const inputId = await pageEditorPage.getFragmentId('Multiselect');
+		const inputId = await pageEditorPage.getFragmentId(
+			'Multiselector Checkbox'
+		);
 
 		await pageEditorPage.changeFragmentConfiguration({
 			fieldLabel: 'Show Help Text',
