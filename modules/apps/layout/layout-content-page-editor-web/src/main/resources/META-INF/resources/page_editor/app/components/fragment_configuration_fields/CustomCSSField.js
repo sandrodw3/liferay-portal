@@ -8,6 +8,8 @@ import ClayForm from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useControlledState} from '@liferay/layout-js-components-web';
+import classNames from 'classnames';
+import {validate} from 'csstree-validator';
 import {useId} from 'frontend-js-components-web';
 import React, {useState} from 'react';
 
@@ -23,6 +25,7 @@ export default function CustomCSSField({field, onValueSelect, value}) {
 
 	const [customCSS, setCustomCSS] = useControlledState(value || defaultValue);
 	const [editorModalOpen, setEditorModalOpen] = useState(false);
+	const [hasError, setHasError] = useState(false);
 
 	const onSelect = (content) => {
 		if (defaultValue.trim() === content?.trim()) {
@@ -33,6 +36,18 @@ export default function CustomCSSField({field, onValueSelect, value}) {
 			return;
 		}
 
+		// Validar el CSS introducido por el usuario
+
+		const valid = isValidCSS(content);
+
+		if (!valid) {
+			setHasError(true);
+
+			return;
+		}
+
+		setHasError(false);
+
 		if (value !== content) {
 			onValueSelect(field.name, content);
 		}
@@ -40,7 +55,12 @@ export default function CustomCSSField({field, onValueSelect, value}) {
 
 	return (
 		<>
-			<ClayForm.Group className="page-editor__custom-css-field" small>
+			<ClayForm.Group
+				className={classNames('page-editor__custom-css-field', {
+					'has-error': hasError,
+				})}
+				small
+			>
 				<div className="align-items-end d-flex justify-content-between">
 					<label htmlFor={id}>
 						{Liferay.Language.get('custom-css')}
@@ -84,6 +104,14 @@ export default function CustomCSSField({field, onValueSelect, value}) {
 					onChange={(event) => setCustomCSS(event.target.value)}
 					value={customCSS}
 				/>
+
+				{hasError ? (
+					<ClayForm.FeedbackGroup role="alert">
+						<ClayForm.FeedbackItem>
+							This CSS is invalid
+						</ClayForm.FeedbackItem>
+					</ClayForm.FeedbackGroup>
+				) : null}
 			</ClayForm.Group>
 
 			<CustomCSSEditorModal
@@ -163,4 +191,26 @@ function CustomCSSEditorModal({
 			</ClayModal>
 		)
 	);
+}
+
+function isValidCSS(css) {
+
+	// To ensure balanced braces, we need to check them manually
+
+	const openBraces = (css.match(/{/g) || []).length;
+	const closeBraces = (css.match(/}/g) || []).length;
+
+	if (openBraces !== closeBraces) {
+		return false;
+	}
+
+	// Validate using csstree-validator
+
+	const validation = validate(css);
+
+	if (validation.length) {
+		return false;
+	}
+
+	return true;
 }
