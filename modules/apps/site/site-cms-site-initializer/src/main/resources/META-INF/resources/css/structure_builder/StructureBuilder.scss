@@ -3,6 +3,16 @@
 $structureFieldsWidth: 448px;
 
 .structure-builder {
+	&__help-modal-trigger {
+		bottom: 0;
+		right: 0;
+
+		[dir='rtl'] & {
+			right: auto;
+			left: 0;
+		}
+	}
+
 	&__sidebar {
 		background-color: $cadmin-light-l1;
 		width: $structureFieldsWidth;

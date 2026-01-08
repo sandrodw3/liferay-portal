@@ -17,6 +17,7 @@ import StateContextProvider, {useSelector} from '../contexts/StateContext';
 import selectStructureId from '../selectors/selectStructureId';
 import selectStructureStatus from '../selectors/selectStructureStatus';
 import buildState from '../utils/buildState';
+import {HelpModalTrigger} from './HelpModal';
 import Sidebar from './Sidebar';
 import StructureBuilderToolbar from './StructureBuilderToolbar';
 import Settings from './settings/Settings';
@@ -50,6 +51,8 @@ export default function StructureBuilder({
 
 						<Settings />
 					</div>
+
+					<HelpModalTrigger />
 				</div>
 			</CacheContextProvider>
 		</StateContextProvider>
