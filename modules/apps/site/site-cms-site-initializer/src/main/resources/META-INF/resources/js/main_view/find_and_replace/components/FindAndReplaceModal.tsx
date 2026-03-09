@@ -58,6 +58,7 @@ function FindAndReplaceModal({observer}: {observer: Observer}) {
 	return (
 		<ClayModal
 			center={size !== 'full-screen'}
+			className="cms-find-and-replace-modal"
 			disableAutoClose
 			observer={observer}
 			size={size}

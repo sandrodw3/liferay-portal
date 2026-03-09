@@ -126,7 +126,7 @@ export function FindAndReplaceContextProvider({
 			setLocales(filteredLocales);
 
 			if (filteredItems.length) {
-				setView('setup');
+				setView('summary');
 			}
 			else {
 				setView('no-matches');

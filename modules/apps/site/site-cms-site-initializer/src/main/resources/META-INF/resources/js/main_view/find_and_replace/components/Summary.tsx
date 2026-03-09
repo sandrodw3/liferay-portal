@@ -4,13 +4,43 @@
  */
 
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
+import ClayList from '@clayui/list';
 import ClayModal from '@clayui/modal';
+import {
+	EConfigInURLBehavior,
+	FrontendDataSet,
+} from '@liferay/frontend-data-set-web';
+import {sub} from 'frontend-js-web';
 import React, {useContext} from 'react';
 
 import {
 	FindAndReplaceContext,
+	ReplaceItem,
 	useDiscard,
 } from '../contexts/FindAndReplaceContext';
+
+export const MOCK_ITEMS: ReplaceItem[] = Array.from(
+	{length: 30},
+	(_, index) => {
+		const itemNumber = index + 1;
+
+		const valueI18n = {
+			[Liferay.ThemeDisplay.getDefaultLanguageId()]: `Title ${itemNumber}`,
+		} as ReplaceItem['fields'][number]['value_i18n'];
+
+		return {
+			externalReferenceCode: `mock-erc-${itemNumber}`,
+			fields: [
+				{
+					label: 'Title',
+					name: 'title',
+					value_i18n: valueI18n,
+				},
+			],
+			id: `mock-id-${itemNumber}`,
+		};
+	}
+);
 
 export function Summary() {
 	const {setView} = useContext(FindAndReplaceContext);
@@ -24,7 +54,7 @@ export function Summary() {
 			>
 				<div className="align-items-center c-gap-3 d-flex">
 					<ClayButtonWithIcon
-						aria-label="back"
+						aria-label={Liferay.Language.get('back')}
 						borderless
 						className="text-secondary"
 						displayType="unstyled"
@@ -38,7 +68,9 @@ export function Summary() {
 				</div>
 			</ClayModal.Header>
 
-			<ClayModal.Body>SUMMARY</ClayModal.Body>
+			<ClayModal.Body>
+				<DataSet />
+			</ClayModal.Body>
 
 			<ClayModal.Footer
 				last={
@@ -57,4 +89,85 @@ export function Summary() {
 			/>
 		</>
 	);
+}
+
+function DataSet() {
+	const {items} = useContext(FindAndReplaceContext);
+
+	return (
+		<FrontendDataSet
+			configInURLBehavior={EConfigInURLBehavior.OFF}
+			id="findAndReplaceItemList"
+			items={MOCK_ITEMS}
+			pagination={{
+				deltas: [{label: 10}, {label: 20}],
+				initialDelta: 10,
+			}}
+			showPagination
+			style="fluid"
+			views={[
+				{
+					component: List,
+					contentRenderer: 'table',
+					name: 'table',
+					schema: {
+						fields: [],
+					},
+				},
+			]}
+		/>
+	);
+}
+
+function List({items}: {items: ReplaceItem[]}) {
+	return (
+		<ClayList>
+			{items.map((item) => (
+				<ClayList.Item
+					className="align-items-center"
+					flex
+					key={item.id}
+				>
+					<ClayList.ItemField expand>
+						<ClayList.ItemTitle>
+							{getTitle(item)}
+						</ClayList.ItemTitle>
+
+						<ClayList.ItemText>
+							{sub(
+								Liferay.Language.get('x-changes'),
+								item.fields.length
+							)}
+						</ClayList.ItemText>
+					</ClayList.ItemField>
+
+					<ClayList.ItemField>
+						<ClayButton displayType="secondary" size="sm">
+							{Liferay.Language.get('apply-changes')}
+						</ClayButton>
+					</ClayList.ItemField>
+
+					<ClayList.ItemField>
+						<ClayButtonWithIcon
+							aria-label={sub(
+								Liferay.Language.get('discard-changes-to-x'),
+								getTitle(item)
+							)}
+							borderless
+							displayType="secondary"
+							monospaced
+							size="sm"
+							symbol="times-circle"
+						/>
+					</ClayList.ItemField>
+				</ClayList.Item>
+			))}
+		</ClayList>
+	);
+}
+
+function getTitle(item: ReplaceItem) {
+	const field = item.fields.find((field) => field.name === 'title');
+
+	return field?.value_i18n![Liferay.ThemeDisplay.getDefaultLanguageId()];
 }
