@@ -202,6 +202,12 @@ export function TargetCollectionDisplayField({field, onValueSelect, value}) {
 					</label>
 				))}
 			</ClayDropDown>
+
+			{field.description ? (
+				<p className="m-0 mt-1 small text-secondary">
+					{field.description}
+				</p>
+			) : null}
 		</ClayForm.Group>
 	);
 }
