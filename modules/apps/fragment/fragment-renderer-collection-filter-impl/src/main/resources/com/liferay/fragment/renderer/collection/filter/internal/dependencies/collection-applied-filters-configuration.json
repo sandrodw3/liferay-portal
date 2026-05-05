@@ -8,7 +8,10 @@
 					],
 					"label": "target-collection",
 					"name": "targetCollections",
-					"type": "targetCollectionDisplay"
+					"type": "targetCollectionDisplay",
+					"typeOptions": {
+						"showAppliedFilterHint": true
+					}
 				},
 				{
 					"defaultValue": "false",

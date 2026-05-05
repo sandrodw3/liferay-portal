@@ -22,6 +22,8 @@ import {isLayoutDataItemDeleted} from '../../utils/isLayoutDataItemDeleted';
 export function TargetCollectionDisplayField({field, onValueSelect, value}) {
 	const enableCompatibleCollections =
 		field.typeOptions?.enableCompatibleCollections || false;
+	const showAppliedFilterHint =
+		field.typeOptions?.showAppliedFilterHint || false;
 
 	const [active, setActive] = useState(false);
 	const [filterableCollections, setFilterableCollections] = useState(null);
@@ -142,67 +144,80 @@ export function TargetCollectionDisplayField({field, onValueSelect, value}) {
 	});
 
 	return (
-		<ClayForm.Group className="mt-1">
-			<label htmlFor={inputId}>
-				{field.label || Liferay.Language.get('target-collection')}
-			</label>
-
-			<ClayDropDown
-				active={active}
-				id={inputId}
-				menuElementAttrs={{
-					containerProps: {
-						className:
-							'cadmin page-editor__target-collections-field',
-					},
-				}}
-				onActiveChange={setActive}
-				trigger={
-					<ClayButton
-						aria-label={Liferay.Language.get('select')}
-						className="bg-light font-weight-normal form-control-select text-left w-100"
-						displayType="secondary"
-						size="sm"
-					>
-						{inputValue ? (
-							<span className="text-dark">{inputValue}</span>
-						) : (
-							Liferay.Language.get('select')
-						)}
-					</ClayButton>
-				}
-			>
-				{enableCompatibleCollections &&
-					Object.keys(filterableCollections).length > 1 && (
-						<ClayDropDown.Help className="pt-3 px-3">
-							{Liferay.Language.get(
-								'multiple-selection-must-have-at-least-one-filter-in-common'
-							)}
-						</ClayDropDown.Help>
+		<>
+			{showAppliedFilterHint && (
+				<p
+					aria-live="polite"
+					className="alert alert-info mt-2 text-center"
+				>
+					{Liferay.Language.get(
+						'you-will-see-this-fragment-on-the-page-only-after-applying-a-filter'
 					)}
+				</p>
+			)}
 
-				{items.map((item) => (
-					<label
-						className={classNames('d-flex dropdown-item', {
-							disabled: item.disabled,
-						})}
-						key={item.value}
-						onMouseLeave={() => hoverItem(null)}
-						onMouseOver={() => hoverItem(item.value)}
-					>
-						<ClayCheckbox
-							checked={item.checked}
-							disabled={item.disabled}
-							onChange={item.onChange}
-						/>
+			<ClayForm.Group className="mt-1">
+				<label htmlFor={inputId}>
+					{field.label || Liferay.Language.get('target-collection')}
+				</label>
 
-						<span className="font-weight-normal ml-2">
-							{item.label}
-						</span>
-					</label>
-				))}
-			</ClayDropDown>
-		</ClayForm.Group>
+				<ClayDropDown
+					active={active}
+					id={inputId}
+					menuElementAttrs={{
+						containerProps: {
+							className:
+								'cadmin page-editor__target-collections-field',
+						},
+					}}
+					onActiveChange={setActive}
+					trigger={
+						<ClayButton
+							aria-label={Liferay.Language.get('select')}
+							className="bg-light font-weight-normal form-control-select text-left w-100"
+							displayType="secondary"
+							size="sm"
+						>
+							{inputValue ? (
+								<span className="text-dark">{inputValue}</span>
+							) : (
+								Liferay.Language.get('select')
+							)}
+						</ClayButton>
+					}
+				>
+					{enableCompatibleCollections &&
+						Object.keys(filterableCollections).length > 1 && (
+							<ClayDropDown.Help className="pt-3 px-3">
+								{Liferay.Language.get(
+									'multiple-selection-must-have-at-least-one-filter-in-common'
+								)}
+							</ClayDropDown.Help>
+						)}
+
+					{items.map((item) => (
+						<label
+							className={classNames('d-flex dropdown-item', {
+								disabled: item.disabled,
+							})}
+							key={item.value}
+							onMouseLeave={() => hoverItem(null)}
+							onMouseOver={() => hoverItem(item.value)}
+						>
+							<ClayCheckbox
+								checked={item.checked}
+								disabled={item.disabled}
+								onChange={item.onChange}
+							/>
+
+							<span className="font-weight-normal ml-2">
+								{item.label}
+							</span>
+						</label>
+					))}
+				</ClayDropDown>
+			</ClayForm.Group>
+		</>
 	);
 }
 

@@ -494,6 +494,10 @@
 						"enableCompatibleCollections": {
 							"title": "The EnableCompatibleCollections Schema",
 							"type": "boolean"
+						},
+						"showAppliedFilterHint": {
+							"title": "The ShowAppliedFilterHint Schema",
+							"type": "boolean"
 						}
 					},
 					"title": "The Typeoptions Schema",
