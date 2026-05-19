@@ -1,0 +1,32 @@
+.phone-number-input-prefix {
+	flex-shrink: 0;
+	margin-right: 0.5rem;
+}
+
+.phone-number-input-prefix-fixed {
+	align-items: center;
+	background-color: #f7f8f9;
+	display: inline-flex;
+	flex-shrink: 0;
+	gap: 0.25rem;
+	margin-right: 0.5rem;
+	width: auto;
+}
+
+.phone-number-input-prefix-flag {
+	display: inline-flex;
+}
+
+.phone-number-input-prefix-flag:empty {
+	display: none;
+}
+
+.phone-number-input-prefix-select {
+	min-width: 6rem;
+	width: auto;
+}
+
+.phone-number-input-number {
+	flex: 1;
+	min-width: 0;
+}
