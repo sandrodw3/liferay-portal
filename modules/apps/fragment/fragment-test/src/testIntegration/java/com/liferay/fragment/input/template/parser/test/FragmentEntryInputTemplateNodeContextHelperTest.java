@@ -38,6 +38,7 @@ import com.liferay.object.field.builder.AttachmentObjectFieldBuilder;
 import com.liferay.object.field.builder.DateObjectFieldBuilder;
 import com.liferay.object.field.builder.DateTimeObjectFieldBuilder;
 import com.liferay.object.field.builder.MultiselectPicklistObjectFieldBuilder;
+import com.liferay.object.field.builder.PhoneNumberObjectFieldBuilder;
 import com.liferay.object.field.builder.PicklistObjectFieldBuilder;
 import com.liferay.object.field.builder.TextObjectFieldBuilder;
 import com.liferay.object.field.util.ObjectFieldUtil;
@@ -56,6 +57,8 @@ import com.liferay.object.test.util.ObjectRelationshipTestUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -81,6 +84,7 @@ import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -176,6 +180,103 @@ public class FragmentEntryInputTemplateNodeContextHelperTest {
 			listTypeEntry2.getKey() + StringPool.COMMA +
 				listTypeEntry3.getKey(),
 			"ObjectField_myMultiselectPicklist");
+	}
+
+	@FeatureFlag("LPD-83570")
+	@Test
+	public void testGetPhoneNumberInfoFieldTypeCountries() throws Exception {
+		ObjectDefinition objectDefinition =
+			ObjectDefinitionTestUtil.publishObjectDefinition(
+				"PhoneNumberObjectDefinition",
+				Collections.singletonList(
+					new PhoneNumberObjectFieldBuilder(
+					).labelMap(
+						LocalizedMapUtil.getLocalizedMap(
+							RandomTestUtil.randomString())
+					).name(
+						"myPhoneNumber"
+					).objectFieldSettings(
+						Collections.singletonList(
+							_createObjectFieldSetting(
+								ObjectFieldSettingConstants.NAME_PREFIX_TYPE,
+								ObjectFieldSettingConstants.
+									VALUE_DEFINED_BY_USER))
+					).build()),
+				ObjectDefinitionConstants.SCOPE_SITE);
+
+		ObjectEntry objectEntry = _objectEntryLocalService.addObjectEntry(
+			_group.getGroupId(), TestPropsValues.getUserId(),
+			objectDefinition.getObjectDefinitionId(),
+			ObjectEntryFolderConstants.PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT,
+			null, Collections.emptyMap(),
+			ServiceContextTestUtil.getServiceContext());
+
+		HttpServletRequest httpServletRequest = new MockHttpServletRequest();
+
+		httpServletRequest.setAttribute(
+			WebKeys.THEME_DISPLAY, _getThemeDisplay());
+
+		LayoutDisplayPageProvider<?> layoutDisplayPageProvider =
+			_layoutDisplayPageProviderRegistry.
+				getLayoutDisplayPageProviderByClassName(
+					objectDefinition.getCompanyId(),
+					objectDefinition.getClassName());
+
+		httpServletRequest.setAttribute(
+			LayoutDisplayPageWebKeys.LAYOUT_DISPLAY_PAGE_OBJECT_PROVIDER,
+			layoutDisplayPageProvider.getLayoutDisplayPageObjectProvider(
+				new InfoItemReference(
+					objectDefinition.getClassName(),
+					objectEntry.getObjectEntryId())));
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group, TestPropsValues.getUserId());
+
+		serviceContext.setRequest(httpServletRequest);
+
+		InfoItemFormProvider<?> infoItemFormProvider =
+			_infoItemServiceRegistry.getFirstInfoItemService(
+				InfoItemFormProvider.class, objectDefinition.getClassName());
+
+		try {
+			ServiceContextThreadLocal.pushServiceContext(serviceContext);
+
+			InputTemplateNode inputTemplateNode =
+				_fragmentEntryInputTemplateNodeContextHelper.
+					toInputTemplateNode(
+						Collections.emptyMap(), "Default",
+						_addInputFragmentEntryLink("ObjectField_myPhoneNumber"),
+						httpServletRequest,
+						infoItemFormProvider.getInfoForm(
+							StringPool.BLANK, _group.getGroupId()),
+						LocaleUtil.getSiteDefault());
+
+			Map<String, Object> attributes = inputTemplateNode.getAttributes();
+
+			JSONArray countriesJSONArray = (JSONArray)attributes.get(
+				"countries");
+
+			Assert.assertNotNull(countriesJSONArray);
+			Assert.assertTrue(countriesJSONArray.length() > 0);
+
+			for (int i = 0; i < countriesJSONArray.length(); i++) {
+				JSONObject countryJSONObject =
+					countriesJSONArray.getJSONObject(i);
+
+				Assert.assertNotNull(countryJSONObject.getString("a2"));
+				Assert.assertNotNull(countryJSONObject.getString("name"));
+				Assert.assertNotNull(countryJSONObject.getString("prefix"));
+			}
+
+			Assert.assertEquals(
+				ObjectFieldSettingConstants.VALUE_DEFINED_BY_USER,
+				attributes.get("prefixType"));
+			Assert.assertEquals(StringPool.BLANK, attributes.get("prefix"));
+		}
+		finally {
+			ServiceContextThreadLocal.popServiceContext();
+		}
 	}
 
 	@Test
