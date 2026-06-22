@@ -417,7 +417,8 @@ public class FragmentEntryInputTemplateNodeContextHelperImpl
 
 		inputTemplateNode.addAttribute(
 			"preferredDomains",
-			infoField.getAttribute(EmailInfoFieldType.PREFERRED_DOMAINS));
+			_jsonFactory.createJSONArray(
+				infoField.getAttribute(EmailInfoFieldType.PREFERRED_DOMAINS)));
 	}
 
 	private void _addFileInfoFieldTypeInputTemplateNodeAttributes(
