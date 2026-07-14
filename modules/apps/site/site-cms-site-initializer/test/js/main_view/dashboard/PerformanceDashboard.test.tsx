@@ -7,6 +7,7 @@ import '@testing-library/jest-dom';
 import {render, screen} from '@testing-library/react';
 import React from 'react';
 
+import ApiHelper from '../../../../src/main/resources/META-INF/resources/js/common/services/ApiHelper';
 import SpaceService from '../../../../src/main/resources/META-INF/resources/js/common/services/SpaceService';
 import PerformanceDashboard from '../../../../src/main/resources/META-INF/resources/js/main_view/dashboard/performance/PerformanceDashboard';
 
@@ -15,6 +16,12 @@ jest.mock(
 );
 
 const mockedSpaceService = SpaceService as jest.Mocked<typeof SpaceService>;
+
+const constants = {
+	cmsGroupId: '123',
+	ercContentStructures: 'CONTENT_STRUCTURES',
+	ercFileTypes: 'FILE_TYPES',
+};
 
 function renderPerformanceDashboard({
 	analyticsCloudEnabled = true,
@@ -25,6 +32,7 @@ function renderPerformanceDashboard({
 		<PerformanceDashboard
 			admin={false}
 			analyticsEnabled={analyticsCloudEnabled}
+			constants={constants}
 		/>
 	);
 }
@@ -32,6 +40,11 @@ function renderPerformanceDashboard({
 describe('PerformanceDashboard', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+
+		jest.spyOn(ApiHelper, 'get').mockResolvedValue({
+			data: {items: []},
+			error: null,
+		});
 
 		mockedSpaceService.getSpaces.mockResolvedValue([]);
 	});
