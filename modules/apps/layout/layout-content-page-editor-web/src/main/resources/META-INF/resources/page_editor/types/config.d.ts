@@ -174,6 +174,7 @@ export interface Config {
 	getInfoItemActionErrorMessageURL: string;
 	getInfoItemFieldValueURL: string;
 	getInfoItemOneToManyRelationshipsURL: string;
+	getLayoutDataURL: string;
 	getLayoutFriendlyURL: string;
 	getLayoutPageTemplateCollectionsURL: string;
 	getPageContentsURL: string;
