@@ -20,6 +20,7 @@ import {useDispatch, useGetState} from '../../contexts/StoreContext';
 import selectSegmentsExperienceId from '../../selectors/selectSegmentsExperienceId';
 import switchSidebarPanel from '../../thunks/switchSidebarPanel';
 import updateLayoutData from '../../thunks/updateLayoutData';
+import useAIAssistantOpen from './useAIAssistantOpen';
 
 function getPage(data: string | undefined): {
 	externalReferenceCode?: string;
@@ -38,6 +39,7 @@ function getPage(data: string | undefined): {
 
 export default function AIAssistantButton() {
 	const activeItemIds = useActiveItemIds();
+	const aiAssistantOpen = useAIAssistantOpen();
 	const dispatch = useDispatch();
 	const getState = useGetState();
 
@@ -46,6 +48,17 @@ export default function AIAssistantButton() {
 	useEffect(() => {
 		activeItemIdsRef.current = activeItemIds;
 	}, [activeItemIds]);
+
+	useEffect(() => {
+		if (aiAssistantOpen) {
+			dispatch(
+				switchSidebarPanel({
+					hidden: false,
+					itemConfigurationOpen: true,
+				})
+			);
+		}
+	}, [aiAssistantOpen, dispatch]);
 
 	useEffect(() => {
 		const contentChangedHandler = Liferay.on(
@@ -87,14 +100,6 @@ export default function AIAssistantButton() {
 			greeting={Liferay.Language.get('hi-i-can-help-you-edit-this-page')}
 			hideLabel
 			instructionDefinitionScope=""
-			onOpen={() =>
-				dispatch(
-					switchSidebarPanel({
-						hidden: false,
-						itemConfigurationOpen: true,
-					})
-				)
-			}
 			presentation="dropdown"
 			size="sm"
 			triggerId={AI_ASSISTANT_TRIGGER_ID}

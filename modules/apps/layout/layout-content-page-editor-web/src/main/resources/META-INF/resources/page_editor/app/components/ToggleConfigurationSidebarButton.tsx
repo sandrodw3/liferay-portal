@@ -4,6 +4,7 @@
  */
 
 import {ClayButtonWithIcon} from '@clayui/button';
+import {AIAssistant} from '@liferay/ai-hub-cell-js-components-web';
 import React from 'react';
 
 import {useDispatch} from '../contexts/StoreContext';
@@ -19,6 +20,8 @@ export default function ToggleConfigurationSidebarButton() {
 			displayType="secondary"
 			id="page-editor__toolbar__configuration-button"
 			onClick={() => {
+				AIAssistant.close();
+
 				dispatch(
 					switchSidebarPanel({
 						itemConfigurationOpen: true,

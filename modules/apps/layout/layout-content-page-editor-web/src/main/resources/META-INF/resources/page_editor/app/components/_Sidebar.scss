@@ -43,6 +43,17 @@ html#{$cadmin-selector} .cadmin .page-editor__item-configuration-sidebar {
 		transform: translateX(0);
 		visibility: visible;
 	}
+
+	.page-editor__ai-assistant {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		min-height: 0;
+
+		&[hidden] {
+			display: none;
+		}
+	}
 }
 
 html#{$cadmin-selector}

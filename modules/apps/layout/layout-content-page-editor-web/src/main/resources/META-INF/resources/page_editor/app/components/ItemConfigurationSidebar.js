@@ -10,16 +10,19 @@ import classNames from 'classnames';
 import React from 'react';
 
 import MultiSelectMessage from '../../common/components/MultiSelectMessage';
+import {AI_ASSISTANT_CONTAINER_ID} from '../config/constants/aiAssistant';
 import {config} from '../config/index';
 import {useActiveItemIds, useActiveItemType} from '../contexts/ControlsContext';
 import {useDispatch, useSelector} from '../contexts/StoreContext';
 import selectItemConfigurationOpen from '../selectors/selectItemConfigurationOpen';
 import switchSidebarPanel from '../thunks/switchSidebarPanel';
 import ItemConfiguration from './ItemConfiguration';
+import useAIAssistantOpen from './ai_assistant/useAIAssistantOpen';
 
 export default function ItemConfigurationSidebar() {
 	const activeItemIds = useActiveItemIds();
 	const activeItemType = useActiveItemType();
+	const aiAssistantOpen = useAIAssistantOpen();
 	const dispatch = useDispatch();
 
 	const [activeItemId] = activeItemIds;
@@ -65,34 +68,44 @@ export default function ItemConfigurationSidebar() {
 							itemConfigurationOpen,
 					}
 				)}
-				tabIndex={activeItemId ? null : 0}
+				tabIndex={activeItemId || aiAssistantOpen ? null : 0}
 			>
-				<div className="d-flex d-md-none justify-content-end mr-2 mt-3">
-					<ClayButtonWithIcon
-						aria-label={Liferay.Language.get('close')}
-						borderless
-						displayType="unstyled"
-						monospaced
-						onClick={() => {
-							dispatch(
-								switchSidebarPanel({
-									itemConfigurationOpen: false,
-								})
-							);
+				<div
+					className="page-editor__ai-assistant"
+					hidden={!aiAssistantOpen}
+					id={AI_ASSISTANT_CONTAINER_ID}
+				/>
 
-							document
-								.getElementById(
-									'page-editor__toolbar__configuration-button'
-								)
-								?.focus();
-						}}
-						size="sm"
-						symbol="times"
-						title={Liferay.Language.get('close')}
-					/>
-				</div>
+				{!aiAssistantOpen && (
+					<>
+						<div className="d-flex d-md-none justify-content-end mr-2 mt-3">
+							<ClayButtonWithIcon
+								aria-label={Liferay.Language.get('close')}
+								borderless
+								displayType="unstyled"
+								monospaced
+								onClick={() => {
+									dispatch(
+										switchSidebarPanel({
+											itemConfigurationOpen: false,
+										})
+									);
 
-				<ItemConfigurationSidebarContent />
+									document
+										.getElementById(
+											'page-editor__toolbar__configuration-button'
+										)
+										?.focus();
+								}}
+								size="sm"
+								symbol="times"
+								title={Liferay.Language.get('close')}
+							/>
+						</div>
+
+						<ItemConfigurationSidebarContent />
+					</>
+				)}
 			</div>
 		</ReactPortal>
 	);
