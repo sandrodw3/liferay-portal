@@ -28,15 +28,19 @@ import com.liferay.list.type.entry.util.ListTypeEntryUtil;
 import com.liferay.list.type.model.ListTypeDefinition;
 import com.liferay.list.type.model.ListTypeEntry;
 import com.liferay.list.type.service.ListTypeDefinitionLocalService;
+import com.liferay.map.geocoder.GeocoderResult;
+import com.liferay.map.test.util.GeocoderTestUtil;
 import com.liferay.object.constants.ObjectActionKeys;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.field.builder.AttachmentObjectFieldBuilder;
 import com.liferay.object.field.builder.DateTimeObjectFieldBuilder;
+import com.liferay.object.field.builder.LocationObjectFieldBuilder;
 import com.liferay.object.field.builder.MultiselectPicklistObjectFieldBuilder;
 import com.liferay.object.field.builder.PicklistObjectFieldBuilder;
 import com.liferay.object.field.builder.TextObjectFieldBuilder;
+import com.liferay.object.field.business.type.ObjectFieldBusinessTypeRegistry;
 import com.liferay.object.field.util.ObjectFieldUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -47,6 +51,7 @@ import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
 import com.liferay.petra.io.unsync.UnsyncStringWriter;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.memory.DeleteFileFinalizeAction;
 import com.liferay.petra.memory.FinalizeManager;
 import com.liferay.petra.string.StringPool;
@@ -417,6 +422,62 @@ public class EditInfoItemStrutsActionTest {
 	@Test
 	public void testAddInfoItemInvalidLongTooSmall() throws Exception {
 		_testAddInfoItemWithInvalidData(null, null, "-9007199254740992");
+	}
+
+	@FeatureFlag({"LPD-11388", "LPD-70668"})
+	@Test
+	@TestInfo("LPD-70670")
+	public void testAddInfoItemLocation() throws Exception {
+		ObjectDefinition objectDefinition =
+			ObjectDefinitionTestUtil.publishObjectDefinition(
+				Collections.singletonList(
+					new LocationObjectFieldBuilder(
+					).labelMap(
+						RandomTestUtil.randomLocaleStringMap()
+					).name(
+						"myLocation"
+					).build()));
+
+		_classNameId = String.valueOf(
+			_portal.getClassNameId(objectDefinition.getClassName()));
+
+		try (SafeCloseable safeCloseable =
+				GeocoderTestUtil.swapWithSafeCloseable(
+					new GeocoderResult("Geocoded Address", 0, 0),
+					_objectFieldBusinessTypeRegistry.getObjectFieldBusinessType(
+						ObjectFieldConstants.BUSINESS_TYPE_LOCATION))) {
+
+			Assert.assertNull(
+				_execute(
+					HashMapBuilder.<String, List<String>>put(
+						"myLocation",
+						Collections.singletonList(
+							"{\"address\": \"Typed Address\", " +
+								"\"coordinates\": {\"latitude\": 41.38, " +
+									"\"longitude\": 2.17}}")
+					).build()));
+		}
+
+		List<ObjectEntry> objectEntries =
+			_objectEntryLocalService.getObjectEntries(
+				0, objectDefinition.getObjectDefinitionId(), QueryUtil.ALL_POS,
+				QueryUtil.ALL_POS);
+
+		Assert.assertEquals(objectEntries.toString(), 1, objectEntries.size());
+
+		ObjectEntry objectEntry = objectEntries.get(0);
+
+		Map<String, Serializable> values = objectEntry.getValues();
+
+		Assert.assertEquals(
+			HashMapBuilder.<String, Serializable>put(
+				"address", "Geocoded Address"
+			).put(
+				"latitude", 41.38
+			).put(
+				"longitude", 2.17
+			).build(),
+			values.get("myLocation"));
 	}
 
 	@Test
@@ -1951,6 +2012,9 @@ public class EditInfoItemStrutsActionTest {
 
 	@Inject
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Inject
+	private ObjectFieldBusinessTypeRegistry _objectFieldBusinessTypeRegistry;
 
 	@Inject
 	private ObjectFieldSettingLocalService _objectFieldSettingLocalService;

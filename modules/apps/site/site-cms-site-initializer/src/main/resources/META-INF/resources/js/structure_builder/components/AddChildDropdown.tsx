@@ -68,6 +68,10 @@ export default function AddChildDropdown({
 		Boolean(parentUuid) &&
 		parentUuid !== structure.uuid;
 
+	const fieldTypes = Liferay.FeatureFlags['LPD-70668']
+		? FIELD_TYPES
+		: FIELD_TYPES.filter((type) => type !== 'location');
+
 	const addField = (type: Field['type']) =>
 		dispatch({
 			field: getDefaultField({
@@ -116,7 +120,7 @@ export default function AddChildDropdown({
 							},
 						]
 					: [],
-				FIELD_TYPES.map(
+				fieldTypes.map(
 					(type): Item => ({
 						label: FIELD_TYPE_LABEL[type],
 						onClick: () => addField(type),

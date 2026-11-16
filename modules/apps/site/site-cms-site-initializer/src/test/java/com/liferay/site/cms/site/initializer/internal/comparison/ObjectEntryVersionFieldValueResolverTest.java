@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -108,6 +109,7 @@ public class ObjectEntryVersionFieldValueResolverTest {
 	}
 
 	@Test
+	@TestInfo("LPD-70671")
 	public void testToDisplayValue() throws Exception {
 		_testToDisplayValueWithAttachmentObjectField();
 		_testToDisplayValueWithBooleanObjectField();
@@ -117,6 +119,7 @@ public class ObjectEntryVersionFieldValueResolverTest {
 		_testToDisplayValueWithHTMLListTypeEntryName();
 		_testToDisplayValueWithHTMLObjectEntryTitle();
 		_testToDisplayValueWithHTMLTextValue();
+		_testToDisplayValueWithLocationObjectField();
 		_testToDisplayValueWithMultiselectPicklistObjectField();
 		_testToDisplayValueWithNonexistentFileEntry();
 		_testToDisplayValueWithNonexistentObjectEntry();
@@ -471,6 +474,8 @@ public class ObjectEntryVersionFieldValueResolverTest {
 		_testToDiffHtmlWithoutDiffHtml(
 			ObjectFieldConstants.BUSINESS_TYPE_INTEGER);
 		_testToDiffHtmlWithoutDiffHtml(
+			ObjectFieldConstants.BUSINESS_TYPE_LOCATION);
+		_testToDiffHtmlWithoutDiffHtml(
 			ObjectFieldConstants.BUSINESS_TYPE_LONG_INTEGER);
 		_testToDiffHtmlWithoutDiffHtml(
 			ObjectFieldConstants.BUSINESS_TYPE_PHONE_NUMBER);
@@ -664,6 +669,30 @@ public class ObjectEntryVersionFieldValueResolverTest {
 				_LANGUAGE_ID,
 				_mockObjectField(ObjectFieldConstants.BUSINESS_TYPE_TEXT), null,
 				"<img src=x onerror=alert(1)>"));
+	}
+
+	private void _testToDisplayValueWithLocationObjectField() {
+		ObjectField objectField = _mockObjectField(
+			ObjectFieldConstants.BUSINESS_TYPE_LOCATION);
+
+		Assert.assertEquals(
+			"Passeig de Gracia &amp; Diagonal",
+			_objectEntryVersionFieldValueResolver.toDisplayValue(
+				_LANGUAGE_ID, objectField, null,
+				HashMapBuilder.<String, Object>put(
+					"address", "Passeig de Gracia & Diagonal"
+				).put(
+					"coordinates",
+					HashMapBuilder.<String, Object>put(
+						"latitude", 41.39
+					).put(
+						"longitude", 2.16
+					).build()
+				).build()));
+		Assert.assertEquals(
+			StringPool.BLANK,
+			_objectEntryVersionFieldValueResolver.toDisplayValue(
+				_LANGUAGE_ID, objectField, null, null));
 	}
 
 	private void _testToDisplayValueWithMultiselectPicklistObjectField() {
