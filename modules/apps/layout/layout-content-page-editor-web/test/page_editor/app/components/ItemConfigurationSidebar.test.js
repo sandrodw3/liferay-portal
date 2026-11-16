@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import ItemConfigurationSidebar from '../../../../src/main/resources/META-INF/resources/page_editor/app/components/ItemConfigurationSidebar';
+import useAIAssistantOpen from '../../../../src/main/resources/META-INF/resources/page_editor/app/components/ai_assistant/useAIAssistantOpen';
 import {ControlsProvider} from '../../../../src/main/resources/META-INF/resources/page_editor/app/contexts/ControlsContext';
 import {StoreAPIContextProvider} from '../../../../src/main/resources/META-INF/resources/page_editor/app/contexts/StoreContext';
 import switchSidebarPanel from '../../../../src/main/resources/META-INF/resources/page_editor/app/thunks/switchSidebarPanel';
@@ -16,6 +17,11 @@ import switchSidebarPanel from '../../../../src/main/resources/META-INF/resource
 const INITIAL_STATE = {
 	sidebar: {itemConfigurationOpen: true},
 };
+
+jest.mock(
+	'../../../../src/main/resources/META-INF/resources/page_editor/app/components/ai_assistant/useAIAssistantOpen',
+	() => jest.fn(() => false)
+);
 
 jest.mock(
 	'../../../../src/main/resources/META-INF/resources/page_editor/app/thunks/switchSidebarPanel',
@@ -63,5 +69,16 @@ describe('ItemConfiguration', () => {
 		expect(
 			screen.getByText('multiple-page-elements-selected')
 		).toBeInTheDocument();
+	});
+
+	it('renders the AI Assistant instead of the configuration when it is open', () => {
+		useAIAssistantOpen.mockReturnValue(true);
+
+		renderComponent();
+
+		expect(document.getElementById('pageEditorAIAssistant')).toBeVisible();
+		expect(screen.queryByTitle('close')).not.toBeInTheDocument();
+
+		useAIAssistantOpen.mockReturnValue(false);
 	});
 });
