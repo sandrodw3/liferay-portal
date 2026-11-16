@@ -39,6 +39,7 @@ import ToolbarActionsDropdown from './ToolbarActionsDropdown';
 import Translation from './Translation';
 import ViewportSizeSelector from './ViewportSizeSelector';
 import ZoomAlert from './ZoomAlert';
+import AIAssistantButton from './ai_assistant/AIAssistantButton';
 import Undo from './undo/Undo';
 
 const {useRef} = React;
@@ -201,6 +202,13 @@ function ToolbarBody({className}) {
 				<li className="nav-item">
 					<NetworkStatusBar {...network} />
 				</li>
+
+				{Liferay.FeatureFlags['LPD-62272'] &&
+					Liferay.FeatureFlags['LPD-94002'] && (
+						<li className="nav-item">
+							<AIAssistantButton />
+						</li>
+					)}
 
 				<li className="d-lg-flex d-none nav-item">
 					<Undo />

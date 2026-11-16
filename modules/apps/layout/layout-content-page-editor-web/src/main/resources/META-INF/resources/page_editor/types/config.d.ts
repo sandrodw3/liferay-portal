@@ -190,6 +190,7 @@ export interface Config {
 	isConversionDraft: boolean;
 	isPrivateLayoutsEnabled: boolean;
 	layoutConversionWarningMessages: string[] | null;
+	layoutExternalReferenceCode: string;
 	layoutItemSelectorURL: String;
 	layoutType: LayoutType;
 	lookAndFeelURL: string;
@@ -235,6 +236,7 @@ export interface Config {
 	sidebarPanelsMap: Record<string, SidebarPanel>;
 
 	singleSegmentsExperienceMode: boolean;
+	siteExternalReferenceCode: string;
 	siteNavigationMenuItemSelectorURL: string;
 	styleBookEnabled: boolean;
 	styleBookEntryERC: string;
