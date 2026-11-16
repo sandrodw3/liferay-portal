@@ -1,5 +1,16 @@
 @import 'atlas-variables';
 
+.creation-menu-dropdown .dropdown-item[data-action='generateWithAI'] {
+	color: $purple;
+
+	&.focus,
+	&:focus-visible,
+	&:hover {
+		background-color: $purple-l5;
+		color: $purple;
+	}
+}
+
 .design-library-page-template-set {
 	.card-type-asset-icon {
 		color: $blue;

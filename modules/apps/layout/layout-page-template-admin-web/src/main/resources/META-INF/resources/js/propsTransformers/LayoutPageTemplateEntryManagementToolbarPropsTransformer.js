@@ -5,6 +5,7 @@
 
 import {openSimpleInputModal} from 'frontend-js-components-web';
 
+import {generateWithAI} from '../ai_assistant/aiAssistant';
 import openDeletePageTemplateModal from '../commands/openDeletePageTemplateModal';
 
 export default function propsTransformer({portletNamespace, ...otherProps}) {
@@ -60,12 +61,18 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 			if (data?.action === 'addLayoutPageTemplateEntry') {
 				addLayoutPageTemplateEntry(data);
 			}
+			else if (data?.action === 'generateWithAI') {
+				generateWithAI(data);
+			}
 		},
 		onCreationMenuItemClick(event, {item}) {
 			const data = item?.data;
 
 			if (data?.action === 'addLayoutPageTemplateEntry') {
 				addLayoutPageTemplateEntry(data);
+			}
+			else if (data?.action === 'generateWithAI') {
+				generateWithAI(data);
 			}
 		},
 	};

@@ -10,6 +10,7 @@ import {
 import {openSelectionModal} from 'frontend-js-components-web';
 import {getCheckedCheckboxes, setFormValues} from 'frontend-js-web';
 
+import {generateWithAI} from '../ai_assistant/aiAssistant';
 import openDeletePageTemplateModal from '../commands/openDeletePageTemplateModal';
 
 export default function propsTransformer({portletNamespace, ...otherProps}) {
@@ -145,6 +146,9 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 						portletNamespace,
 					},
 				});
+			}
+			else if (data?.action === 'generateWithAI') {
+				generateWithAI(data);
 			}
 		},
 	};

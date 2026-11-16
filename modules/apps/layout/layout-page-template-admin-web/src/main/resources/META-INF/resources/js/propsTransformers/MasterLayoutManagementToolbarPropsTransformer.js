@@ -5,6 +5,7 @@
 
 import {openSimpleInputModal} from 'frontend-js-components-web';
 
+import {generateWithAI} from '../ai_assistant/aiAssistant';
 import openDeletePageTemplateModal from '../commands/openDeletePageTemplateModal';
 
 export default function propsTransformer({portletNamespace, ...otherProps}) {
@@ -29,6 +30,25 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 		}
 	};
 
+	const handleCreation = (item) => {
+		const data = item?.data;
+
+		if (data?.action === 'generateWithAI') {
+			generateWithAI(data);
+
+			return;
+		}
+
+		openSimpleInputModal({
+			dialogTitle: Liferay.Language.get('add-master-page'),
+			formSubmitURL: data?.addMasterLayoutURL,
+			mainFieldLabel: Liferay.Language.get('name'),
+			mainFieldName: 'name',
+			mainFieldPlaceholder: Liferay.Language.get('name'),
+			namespace: portletNamespace,
+		});
+	};
+
 	return {
 		...otherProps,
 		onActionButtonClick(event, {item}) {
@@ -44,14 +64,10 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 			}
 		},
 		onCreateButtonClick(event, {item}) {
-			openSimpleInputModal({
-				dialogTitle: Liferay.Language.get('add-master-page'),
-				formSubmitURL: item?.data?.addMasterLayoutURL,
-				mainFieldLabel: Liferay.Language.get('name'),
-				mainFieldName: 'name',
-				mainFieldPlaceholder: Liferay.Language.get('name'),
-				namespace: portletNamespace,
-			});
+			handleCreation(item);
+		},
+		onCreationMenuItemClick(event, {item}) {
+			handleCreation(item);
 		},
 	};
 }
