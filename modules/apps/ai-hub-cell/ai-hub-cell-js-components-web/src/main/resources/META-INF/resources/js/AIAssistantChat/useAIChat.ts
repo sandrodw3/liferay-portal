@@ -62,6 +62,7 @@ export interface AIChat {
 
 interface UseAIChatProps {
 	chatbotExternalReferenceCode?: string;
+	connect?: boolean;
 	context?: ChatContext;
 	enableFreeFormCategorization?: boolean;
 	getContext?: () => ChatContext;
@@ -76,6 +77,7 @@ interface UseAIChatProps {
 
 export default function useAIChat({
 	chatbotExternalReferenceCode,
+	connect = true,
 	context,
 	enableFreeFormCategorization = false,
 	getContext,
@@ -526,6 +528,10 @@ export default function useAIChat({
 	}, []);
 
 	useEffect(() => {
+		if (!connect) {
+			return;
+		}
+
 		openAIAssistantChatConnection();
 
 		return () => {
@@ -533,6 +539,7 @@ export default function useAIChat({
 		};
 	}, [
 		closeAIAssistantChatConnection,
+		connect,
 		openAIAssistantChatConnection,
 		sessionKey,
 	]);

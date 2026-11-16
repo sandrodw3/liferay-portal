@@ -49,6 +49,10 @@ const AIAssistantHost: React.FC = () => {
 	const [containerElement, setContainerElement] =
 		useState<HTMLElement | null>(null);
 
+	const [editMode] = useState<boolean>(() =>
+		document.body.classList.contains('has-edit-mode-menu')
+	);
+
 	// Drives Clay's SidePanel open prop. It starts false so the panel mounts
 	// closed and then opens once mounted, letting Clay play its own
 	// slide-in instead of appearing already open.
@@ -154,6 +158,7 @@ const AIAssistantHost: React.FC = () => {
 
 	const chat = useAIChat({
 		chatbotExternalReferenceCode: command?.chatbotExternalReferenceCode,
+		connect: !editMode || isOpen,
 		context: activeCommand?.context,
 		enableFreeFormCategorization:
 			activeCommand?.enableFreeFormCategorization,
