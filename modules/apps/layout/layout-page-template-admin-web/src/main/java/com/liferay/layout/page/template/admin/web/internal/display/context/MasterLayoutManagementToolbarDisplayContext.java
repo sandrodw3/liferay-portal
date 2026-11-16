@@ -17,7 +17,9 @@ import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeCon
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
@@ -131,6 +133,27 @@ public class MasterLayoutManagementToolbarDisplayContext
 	@Override
 	public CreationMenu getCreationMenu() {
 		return CreationMenuBuilder.addDropdownItem(
+			() ->
+				FeatureFlagManagerUtil.isEnabled(
+					_themeDisplay.getCompanyId(), "LPD-62272") &&
+				FeatureFlagManagerUtil.isEnabled(
+					_themeDisplay.getCompanyId(), "LPD-94002"),
+			dropdownItem -> {
+				dropdownItem.putData("action", "generateWithAI");
+
+				Group group = _themeDisplay.getScopeGroup();
+
+				dropdownItem.putData(
+					"siteExternalReferenceCode",
+					group.getExternalReferenceCode());
+
+				dropdownItem.putData("type", "master");
+				dropdownItem.setIcon("stars");
+				dropdownItem.setLabel(
+					LanguageUtil.get(
+						httpServletRequest, "generate-master-with-ai"));
+			}
+		).addDropdownItem(
 			dropdownItem -> {
 				dropdownItem.setData(
 					HashMapBuilder.<String, Object>put(

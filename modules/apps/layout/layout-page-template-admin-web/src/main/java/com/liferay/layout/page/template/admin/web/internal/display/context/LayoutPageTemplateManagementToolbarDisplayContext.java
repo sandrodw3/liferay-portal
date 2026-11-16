@@ -13,6 +13,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.layout.page.template.admin.web.internal.security.permission.resource.LayoutPageTemplateEntryPermission;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateActionKeys;
+import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -134,6 +135,38 @@ public class LayoutPageTemplateManagementToolbarDisplayContext
 	@Override
 	public CreationMenu getCreationMenu() {
 		return CreationMenuBuilder.addPrimaryDropdownItem(
+			() ->
+				FeatureFlagManagerUtil.isEnabled(
+					_themeDisplay.getCompanyId(), "LPD-62272") &&
+				FeatureFlagManagerUtil.isEnabled(
+					_themeDisplay.getCompanyId(), "LPD-94002"),
+			dropdownItem -> {
+				dropdownItem.putData("action", "generateWithAI");
+
+				LayoutPageTemplateCollection layoutPageTemplateCollection =
+					_layoutPageTemplateDisplayContext.
+						getLayoutPageTemplateCollection();
+
+				if (layoutPageTemplateCollection != null) {
+					dropdownItem.putData(
+						"pageTemplateSetExternalReferenceCode",
+						layoutPageTemplateCollection.
+							getExternalReferenceCode());
+				}
+
+				Group group = _themeDisplay.getScopeGroup();
+
+				dropdownItem.putData(
+					"siteExternalReferenceCode",
+					group.getExternalReferenceCode());
+
+				dropdownItem.putData("type", "page-template");
+				dropdownItem.setIcon("stars");
+				dropdownItem.setLabel(
+					LanguageUtil.get(
+						httpServletRequest, "generate-page-template-with-ai"));
+			}
+		).addPrimaryDropdownItem(
 			dropdownItem -> {
 				if (DesignLibraryUtil.isDesignLibraryScope(
 						_themeDisplay.getScopeGroup())) {

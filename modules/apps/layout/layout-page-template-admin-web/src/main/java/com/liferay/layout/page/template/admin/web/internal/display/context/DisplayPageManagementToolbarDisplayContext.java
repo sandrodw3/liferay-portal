@@ -21,10 +21,13 @@ import com.liferay.layout.page.template.constants.LayoutPageTemplateConstants;
 import com.liferay.layout.page.template.item.selector.LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion;
 import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
+import com.liferay.layout.page.template.service.LayoutPageTemplateCollectionServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
@@ -247,6 +250,41 @@ public class DisplayPageManagementToolbarDisplayContext
 	@Override
 	public CreationMenu getCreationMenu() {
 		return CreationMenuBuilder.addDropdownItem(
+			() ->
+				FeatureFlagManagerUtil.isEnabled(
+					_themeDisplay.getCompanyId(), "LPD-62272") &&
+				FeatureFlagManagerUtil.isEnabled(
+					_themeDisplay.getCompanyId(), "LPD-94002"),
+			dropdownItem -> {
+				dropdownItem.putData("action", "generateWithAI");
+
+				LayoutPageTemplateCollection layoutPageTemplateCollection =
+					LayoutPageTemplateCollectionServiceUtil.
+						fetchLayoutPageTemplateCollection(
+							_displayPageDisplayContext.
+								getLayoutPageTemplateCollectionId());
+
+				if (layoutPageTemplateCollection != null) {
+					dropdownItem.putData(
+						"displayPageTemplateFolderExternalReferenceCode",
+						layoutPageTemplateCollection.
+							getExternalReferenceCode());
+				}
+
+				Group group = _themeDisplay.getScopeGroup();
+
+				dropdownItem.putData(
+					"siteExternalReferenceCode",
+					group.getExternalReferenceCode());
+
+				dropdownItem.putData("type", "display-page-template");
+				dropdownItem.setIcon("stars");
+				dropdownItem.setLabel(
+					LanguageUtil.get(
+						httpServletRequest,
+						"generate-display-page-template-with-ai"));
+			}
+		).addDropdownItem(
 			dropdownItem -> {
 				dropdownItem.putData("action", "addDisplayPageCollection");
 				dropdownItem.putData(
