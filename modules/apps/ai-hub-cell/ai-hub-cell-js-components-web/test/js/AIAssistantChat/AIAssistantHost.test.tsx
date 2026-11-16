@@ -185,9 +185,10 @@ describe('AIAssistantHost', () => {
 			'__LIFERAY_AI_ASSISTANT_SINGLETON__'
 		] = {
 			eventBound: true,
+			expandedByTrigger: new Map(),
 			hostMounted: true,
 			listeners: new Set(),
-			state: {command: null},
+			state: {command: null, expanded: false},
 		};
 
 		hostContainerStub = document.createElement('div');
@@ -789,6 +790,22 @@ describe('AIAssistantHost', () => {
 
 	it('offers the expand toggle for a dropdown command', async () => {
 		await renderAndOpen();
+
+		expect(
+			screen.getByRole('button', {name: 'maximize'})
+		).toBeInTheDocument();
+	});
+
+	it('opens an expanded dropdown command as a sidebar that can be minimized', async () => {
+		await renderAndOpen({expanded: true, presentation: 'dropdown'});
+
+		const sidebar = await waitForSidebarOpen();
+
+		await act(async () => {
+			fireEvent.click(
+				within(sidebar).getByRole('button', {name: 'minimize'})
+			);
+		});
 
 		expect(
 			screen.getByRole('button', {name: 'maximize'})
@@ -1581,5 +1598,96 @@ describe('AIAssistantHost', () => {
 				})
 			);
 		});
+	});
+
+	it('renders a command with a container inside it', async () => {
+		const container = document.createElement('div');
+
+		container.id = 'ai-assistant-container';
+
+		document.body.appendChild(container);
+
+		await renderAndOpen({
+			containerId: 'ai-assistant-container',
+			presentation: 'sidebar',
+		});
+
+		expect(
+			container.querySelector('.ai-assistant-chat__embedded-container')
+		).toBeInTheDocument();
+		expect(
+			screen.queryByRole('complementary', {name: 'ai-assistant'})
+		).not.toBeInTheDocument();
+
+		await act(async () => {
+			fireEvent.click(
+				within(container).getByRole('button', {name: 'close'})
+			);
+		});
+
+		expect(container).toBeEmptyDOMElement();
+
+		container.remove();
+	});
+
+	it('minimizes an expanded command with a container to a dropdown', async () => {
+		const container = document.createElement('div');
+
+		container.id = 'ai-assistant-container';
+
+		document.body.appendChild(container);
+
+		await renderAndOpen({
+			containerId: 'ai-assistant-container',
+			expanded: true,
+			presentation: 'dropdown',
+		});
+
+		await act(async () => {
+			fireEvent.click(
+				within(container).getByRole('button', {name: 'minimize'})
+			);
+		});
+
+		expect(container).toBeEmptyDOMElement();
+		expect(
+			screen.getByRole('button', {name: 'maximize'})
+		).toBeInTheDocument();
+
+		container.remove();
+	});
+
+	it('connects in edit mode only while the assistant is open', async () => {
+		document.body.classList.add('has-edit-mode-menu');
+
+		const fakeEventSource = createFakeEventSource();
+
+		mockCreateEventSource.mockResolvedValue(fakeEventSource as never);
+
+		await act(async () => {
+			renderHost({presentation: 'sidebar'});
+		});
+
+		expect(mockCreateEventSource).not.toHaveBeenCalled();
+
+		await clickTrigger();
+
+		expect(mockCreateEventSource).toHaveBeenCalledTimes(1);
+
+		await clickTrigger();
+
+		expect(fakeEventSource.close).toHaveBeenCalled();
+
+		document.body.classList.remove('has-edit-mode-menu');
+	});
+
+	it('renders the trigger with the given size', async () => {
+		await act(async () => {
+			renderHost({size: 'sm'});
+		});
+
+		expect(screen.getByRole('button', {name: 'ai-assistant'})).toHaveClass(
+			'btn-sm'
+		);
 	});
 });
