@@ -6,6 +6,7 @@
 		"@clayui/icon": "^3.167.0",
 		"@clayui/loading-indicator": "^3.167.0",
 		"@clayui/modal": "^3.167.0",
+		"@liferay/ai-hub-cell-js-components-web": "*",
 		"@liferay/frontend-icons-web": "*",
 		"@liferay/frontend-js-react-web": "*",
 		"@liferay/layout-js-components-web": "*",
