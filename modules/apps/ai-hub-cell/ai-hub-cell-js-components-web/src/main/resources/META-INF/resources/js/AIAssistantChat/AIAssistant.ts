@@ -16,6 +16,7 @@ export interface AIAssistantOpenCommand {
 	containerId?: string;
 	context?: ChatContext;
 	enableFreeFormCategorization?: boolean;
+	expanded?: boolean;
 	getContext?: () => ChatContext;
 	greeting?: string;
 	initialMessage?: string;
@@ -31,12 +32,14 @@ export interface AIAssistantOpenCommand {
 
 interface AIAssistantState {
 	command: AIAssistantOpenCommand | null;
+	expanded: boolean;
 }
 
 type Listener = (state: AIAssistantState) => void;
 
 interface AIAssistantSingleton {
 	eventBound: boolean;
+	expandedByTrigger: Map<string, boolean>;
 	hostMounted: boolean;
 	listeners: Set<Listener>;
 	state: AIAssistantState;
@@ -63,9 +66,10 @@ function getSingleton(): AIAssistantSingleton {
 	if (!singleton) {
 		singleton = {
 			eventBound: false,
+			expandedByTrigger: new Map(),
 			hostMounted: false,
 			listeners: new Set(),
-			state: {command: null},
+			state: {command: null, expanded: false},
 		};
 
 		globalScope[GLOBAL_KEY] = singleton;
@@ -106,7 +110,7 @@ export function releaseHost(): void {
 	const singleton = getSingleton();
 
 	singleton.hostMounted = false;
-	singleton.state = {command: null};
+	singleton.state = {command: null, expanded: false};
 }
 
 export function close(): void {
@@ -116,7 +120,7 @@ export function close(): void {
 		return;
 	}
 
-	singleton.state = {command: null};
+	singleton.state = {...singleton.state, command: null};
 
 	emit();
 }
@@ -128,9 +132,27 @@ export function getState(): AIAssistantState {
 export function open(command: AIAssistantOpenCommand): void {
 	const singleton = getSingleton();
 
-	singleton.state = {command};
+	const expanded = command.expanded
+		? singleton.expandedByTrigger.get(command.triggerId) ?? true
+		: false;
+
+	singleton.state = {command, expanded};
 
 	ensureHost();
+
+	emit();
+}
+
+export function setExpanded(expanded: boolean): void {
+	const singleton = getSingleton();
+
+	const {command} = singleton.state;
+
+	if (command?.expanded) {
+		singleton.expandedByTrigger.set(command.triggerId, expanded);
+	}
+
+	singleton.state = {...singleton.state, expanded};
 
 	emit();
 }
@@ -155,4 +177,4 @@ if (!singleton.eventBound) {
 	});
 }
 
-export default {close, ensureHost, getState, open, subscribe};
+export default {close, ensureHost, getState, open, setExpanded, subscribe};
